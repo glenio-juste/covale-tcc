@@ -1,0 +1,370 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>Cadastro de Clientes</title>
+    </h:head>
+    <h:body>
+        <div align="center">
+            <h:form id="cadCliPrincipal">
+
+                <body bgcolor="#CEF6EC">
+
+                    <p:growl id="growl" showDetail="true"  life="7000" autoUpdate="true"/>
+
+                    <p:dataTable var="lista" value="#{clienteMB.clientes}" id="tabelaCliente" rows="8" paginator="true">
+                        <f:facet name="header">
+                            <h3>Clientes Cadastrados</h3>
+                        </f:facet>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Alterar" update=":cadCliAlterar:Alterar" oncomplete="dialogAlterar.show()" immediate="true">
+                                <p:graphicImage value="./imagens/editar.png" />
+                                <f:setPropertyActionListener target="#{clienteMB.cliente}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                            <p:commandLink title="Excluir" update=":cadCliExcluir:Excluir" oncomplete="confirmation.show()" immediate="true" >
+                                <p:graphicImage value="./imagens/inativo.png" />
+                                <f:setPropertyActionListener target="#{clienteMB.cliente}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+
+                            <p:commandLink title="Visualizar" update=":cadCliVisualizar:Visualizar" oncomplete="dialogVisualizar.show()" immediate="true" >
+                                <p:graphicImage value="./imagens/visualizar.png" />
+                                <f:setPropertyActionListener target="#{clienteMB.cliente}"
+                                                             value="#{lista}"/>
+                            </p:commandLink>
+
+                        </p:column>
+                        <p:column headerText="Nome" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Tipo" >
+                            <h:outputText value="#{lista.pessoa}" />
+                        </p:column>
+
+                        <p:column headerText="Fone Com" >
+                            <h:outputText value="#{lista.fonecom}" />
+                        </p:column>
+                        <p:column headerText="Fone Cel" >
+                            <h:outputText value="#{lista.fonecel}" />
+                        </p:column>
+                        <p:column headerText="Email" >
+                            <h:outputText value="#{lista.email}" />
+                        </p:column>
+                        <p:column headerText="Cidade" >
+                            <h:outputText value="#{lista.cidade.nome}" />
+                        </p:column>
+                        <p:column headerText="UF" >
+                            <h:outputText value="#{lista.cidade.estado}" />
+                        </p:column>
+                    </p:dataTable>
+                    <p:commandButton update=":cadCliCadastrar:Cadastrar" value="Novo"
+                                     oncomplete="dialogCadastrar.show()" />
+                    <p:commandButton oncomplete="dialogBuscar.show()" value="Busca" 
+                                     update=":cadCliBuscar:Buscar"/>
+                    <p:commandButton update=":cadCliPrincipal:tabelaCliente" value="Limpar Busca"
+                                     actionListener="#{clienteMB.limparBusca}" />
+                    <p:commandButton oncomplete="dialog.show()" value="Menu" action="menu?faces-redirect=true"/>
+                    <h:commandLink action="menu?faces-redirect=true"/>
+
+                </body>
+
+            </h:form>
+        </div>
+        <div align="center">
+            <h:form id="cadCliAlterar">
+                <p:dialog header="Alterar Cliente" widgetVar="dialogAlterar" modal="true"
+                          id="Alterar">
+                    <p:panelGrid id="panelAlterar" columns="2">
+                        <h:outputText value="Nome: "/>
+                        <p:inputText value="#{clienteMB.cliente.nome}" maxlength="50" size="51"/> 
+
+                        <h:outputText value="Tipo: "/>
+                        <h:selectOneMenu value="#{clienteMB.cliente.pessoa}">
+                            <f:selectItem itemValue="Selecione o Tipo"/>
+                            <f:selectItem itemValue="Física"/>
+                            <f:selectItem itemValue="Jurídica"/>
+                        </h:selectOneMenu>
+
+                        <h:outputText value="RG / Incrição Estadual: "/>
+                        <p:inputText value="#{clienteMB.cliente.doc}" maxlength="15" size="51"/>
+                        <h:outputText value="CPF / CNPJ: "/>
+                        <p:inputText value="#{clienteMB.cliente.tipo}" maxlength="15" size="51"/>
+                        <h:outputText value="Endereço: "/>
+                        <p:inputText value="#{clienteMB.cliente.endereco}" maxlength="50" size="51"/>
+                        <h:outputText value="Bairro: "/>
+                        <p:inputText value="#{clienteMB.cliente.bairro}" maxlength="15" size="51"/>
+                        <h:outputText value="Cep: "/>
+                        <p:inputMask mask="99999-999" value="#{clienteMB.cliente.cep}" maxlength="10" size="51"/>
+                        <h:outputText value="Fone Res: "/>
+                        <p:inputMask mask="(99)9999-9999" value="#{clienteMB.cliente.telefone}" maxlength="15" size="51"/>
+                        <h:outputText value="Fone Com: "/>
+                        <p:inputMask mask="(99)9999-9999" value="#{clienteMB.cliente.fonecom}" maxlength="15" size="51"/>
+                        <h:outputText value="Fone Cel: "/>
+                        <p:inputMask mask="(99) 99999-9999" value="#{clienteMB.cliente.fonecel}" maxlength="15" size="51"/>
+                        <h:outputText value="Email: "/>
+                        <p:inputText value="#{clienteMB.cliente.email}" maxlength="50" size="51"/>
+                        <h:outputText value="Cidade: "/>
+                        <p:column >
+                            <p:inputText value="#{clienteMB.cliente.cidade.nome}" disabled="true"/>
+                            <p:commandButton value="..." 
+                                             oncomplete="dialogAlterar.hide();dialogAlterarCid.show()" 
+                                             update=":cadCliCidAlterar:Alterar"/>
+                        </p:column>
+                    </p:panelGrid>
+                    <p:commandButton value="Alterar"
+                                     actionListener="#{clienteMB.alterar}"
+                                     update=":cadCliPrincipal:tabelaCliente"
+                                     oncomplete="dialogAlterar.hide()" />
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="dialogAlterar.hide()" 
+                                     actionListener="#{clienteMB.cancelar}"/>
+                </p:dialog> 
+            </h:form>
+        </div>
+        <div align="center">
+            <h:form id="cadCliCidAlterar">
+                <p:dialog header="Alterar" widgetVar="dialogAlterarCid" modal="true"
+                          id="Alterar" closable="false">
+                    <p:dataTable var="lista" value="#{clienteMB.cidade}" id="tabelaCidade" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Lista de Cidades Cadastradas</h3>
+                        </f:facet>
+                        <p:column headerText="Cidade" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="UF" >
+                            <h:outputText value="#{lista.estado}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadCliAlterar:Alterar" 
+                                           oncomplete="dialogAlterarCid.hide();dialogAlterar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{clienteMB.cliente.cidade}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+        <div align="center">
+            <h:form id="cadCliCadastrar">
+                <p:dialog header="Cadastrar Cliente" widgetVar="dialogCadastrar" modal="true"
+                          id="Cadastrar">
+                    <p:panelGrid id="panelAlterar" columns="2">
+                        <h:outputText value="Nome: *"/>
+                        <p:inputText value="#{clienteMB.cliente.nome}" maxlength="50" size="51"/> 
+
+                        <h:outputText value="Tipo: *"/>
+                        <h:selectOneMenu value="#{clienteMB.cliente.pessoa}">
+                            <f:selectItem itemValue="Selecione o Tipo"/>
+                            <f:selectItem itemValue="Física"/>
+                            <f:selectItem itemValue="Jurídica"/>
+                        </h:selectOneMenu>
+
+                        <h:outputText value="RG / Incrição Estadual: "/>
+                        <p:inputText value="#{clienteMB.cliente.doc}" maxlength="15" size="51"/>
+                        <h:outputText value="CPF / CNPJ: "/>
+                        <p:inputText value="#{clienteMB.cliente.tipo}" maxlength="15" size="51"/>
+                        <h:outputText value="Endereço: "/>
+                        <p:inputText value="#{clienteMB.cliente.endereco}" maxlength="50" size="51"/>
+                        <h:outputText value="Bairro: "/>
+                        <p:inputText value="#{clienteMB.cliente.bairro}" maxlength="15" size="51"/>
+                        <h:outputText value="Cep: "/>
+                        <p:inputMask mask="99999-999" value="#{clienteMB.cliente.cep}" maxlength="10" size="51"/>
+                        <h:outputText value="Fone Res: "/>
+                        <p:inputMask mask="(99)9999-9999" value="#{clienteMB.cliente.telefone}" maxlength="15" size="51"/>
+                        <h:outputText value="Fone Com: "/>
+                        <p:inputMask mask="(99)9999-9999" value="#{clienteMB.cliente.fonecom}" maxlength="15" size="51"/>
+                        <h:outputText value="Fone Cel: "/>
+                        <p:inputMask mask="(99) 99999-9999" value="#{clienteMB.cliente.fonecel}" maxlength="15" size="51"/>
+                        <h:outputText value="Email: "/>
+                        <p:inputText value="#{clienteMB.cliente.email}" maxlength="50" size="51"/>
+                        <h:outputText value="Cidade: "/>
+                        <p:column>
+                            <p:inputText value="#{clienteMB.cliente.cidade.nome}" disabled="true"/>
+                            <p:commandButton value="..." oncomplete="dialogCadastrar.hide();dialogIncluirCid.show()" 
+                                             update=""/>
+                        </p:column>
+                    </p:panelGrid>
+                    <p:commandButton value="Cadastrar"
+                                     actionListener="#{clienteMB.cadastrar}"
+                                     update=":cadCliPrincipal:tabelaCliente"
+                                     oncomplete="dialogCadastrar.hide()" />
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="dialogCadastrar.hide()" 
+                                     actionListener="#{clienteMB.cancelar}"/>
+
+                    <div align="center">
+                        <h:outputText value="* Preenchimento obrigatório"/>
+                    </div>
+
+
+                </p:dialog>
+            </h:form>
+        </div>
+
+
+        <div align="center">
+            <h:form id="cadCliCidIncluir">
+                <p:dialog header="Alterar" widgetVar="dialogIncluirCid" modal="true"
+                          id="Incluir" closable="false">
+                    <p:dataTable var="lista" value="#{clienteMB.cidade}" id="tabelaCidade" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Lista de Cidades Cadastradas</h3>
+                        </f:facet>
+                        <p:column headerText="Cidade" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="UF" >
+                            <h:outputText value="#{lista.estado}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadCliCadastrar:Cadastrar" 
+                                           oncomplete="dialogIncluirCid.hide();dialogCadastrar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{clienteMB.cliente.cidade}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+
+        <div align="center">
+            <h:form id="cadCliExcluir">
+                <p:confirmDialog id="Excluir"
+                                 message="Você gostaria de excluir 0(a) cliente #{clienteMB.cliente.nome}?"
+                                 header="Excluir" severity="alert" widgetVar="confirmation" >
+                    <p:commandButton id="confirm" value="Sim"
+                                     oncomplete="confirmation.hide()"
+                                     actionListener="#{clienteMB.apagar}"
+                                     update=":cadCliPrincipal:tabelaCliente" />
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="confirmation.hide()" 
+                                     actionListener="#{clienteMB.cancelar}"/>
+                </p:confirmDialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadCliBuscar">
+                <p:dialog header="Buscar" widgetVar="dialogBuscar" modal="true"
+                          id="Buscar">
+                    <p:panelGrid id="panelBuscar" columns="2">
+
+                        <h:outputText value="Nome: "/>
+                        <p:inputText value="#{clienteMB.cliente.nome}" maxlength="50" size="51"/> 
+                        <h:outputText value="RG / Incrição Estadual: "/>
+                        <p:inputText value="#{clienteMB.cliente.doc}" maxlength="15" size="51"/>
+                        <h:outputText value="CPF / CNPJ: "/>
+                        <p:inputText value="#{clienteMB.cliente.tipo}" maxlength="15" size="51"/>
+                        <h:outputText value="Endereço: "/>
+                        <p:inputText value="#{clienteMB.cliente.endereco}" maxlength="50" size="51"/>
+                        <h:outputText value="Bairro: "/>
+                        <p:inputText value="#{clienteMB.cliente.bairro}" maxlength="15" size="51"/>
+                        <h:outputText value="Cep: "/>
+                        <p:inputMask mask="99999-999" value="#{clienteMB.cliente.cep}" maxlength="10" size="51"/>
+                        <h:outputText value="Fone Res: "/>
+                        <p:inputMask mask="(99)9999-9999" value="#{clienteMB.cliente.telefone}" maxlength="15" size="51"/>
+                        <h:outputText value="Fone Com: "/>
+                        <p:inputMask mask="(99)9999-9999" value="#{clienteMB.cliente.fonecom}" maxlength="15" size="51"/>
+                        <h:outputText value="Fone Cel: "/>
+                        <p:inputMask mask="(99) 99999-9999" value="#{clienteMB.cliente.fonecel}" maxlength="15" size="51"/>
+                        <h:outputText value="Email: "/>
+                        <p:inputText value="#{clienteMB.cliente.email}" maxlength="50" size="51"/>
+
+                        <h:outputText value="Cidade: "/>
+                        <p:column>
+                            <p:inputText value="#{clienteMB.cliente.cidade.nome}"/>
+                            <p:commandButton value="..." oncomplete="dialogBuscar.hide();dialogBuscarCid.show()"
+                                             update=":cadCliCidBusca:Buscar"/>
+                        </p:column>
+                    </p:panelGrid>
+                    <p:commandButton value="Buscar"
+                                     actionListener="#{clienteMB.busca}"
+                                     update=":cadCliPrincipal:tabelaCliente" 
+                                     oncomplete="dialogBuscar.hide()"/>
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="dialogBuscar.hide()" 
+                                     actionListener="#{clienteMB.cancelar}" />
+                </p:dialog>
+            </h:form>
+        </div>
+        <div align="center">
+            <h:form id="cadCliCidBusca">
+                <p:dialog header="Buscar" widgetVar="dialogBuscarCid" modal="true"
+                          id="Buscar" closable="false">
+                    <p:dataTable var="lista" value="#{clienteMB.cidade}" id="tabelaCidade" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Cidades Cadastradas</h3>
+                        </f:facet>
+                        <p:column headerText="Cidade" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="UF" >
+                            <h:outputText value="#{lista.estado}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadCliBuscar:Buscar" 
+                                           oncomplete="dialogBuscarCid.hide();dialogBuscar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{clienteMB.cliente.cidade}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadCliVisualizar">
+                <p:dialog header="Dados do Cliente" widgetVar="dialogVisualizar" modal="true"
+                          id="Visualizar">
+                    <p:panelGrid id="panelVisualizar" columns="2">
+                        <h:outputText value="Nome: "/>
+                        <h:outputText value="#{clienteMB.cliente.nome}" /> 
+                        <h:outputText value="Tipo: "/>
+                        <h:outputText value="#{clienteMB.cliente.pessoa}" />
+                        <h:outputText value="RG / Inscrição Estadual "/>
+                        <h:outputText value="#{clienteMB.cliente.doc}" />
+                        <h:outputText value="CPF / CNPJ "/>
+                        <h:outputText value="#{clienteMB.cliente.tipo}" />
+                        <h:outputText value="Endereço: "/>
+                        <h:outputText value="#{clienteMB.cliente.endereco}" />
+                        <h:outputText value="Bairro: "/>
+                        <h:outputText value="#{clienteMB.cliente.bairro}" />
+                        <h:outputText value="Cep: "/>
+                        <h:outputText value="#{clienteMB.cliente.cep}" />
+                        <h:outputText value="Fone Res: "/>
+                        <h:outputText value="#{clienteMB.cliente.telefone}" />
+                        <h:outputText value="Fone Com: "/>
+                        <h:outputText value="#{clienteMB.cliente.fonecom}" />
+                        <h:outputText value="Fone Cel: "/>
+                        <h:outputText value="#{clienteMB.cliente.fonecel}" />
+                        <h:outputText value="Email: "/>
+                        <h:outputText value="#{clienteMB.cliente.email}" />
+                        <h:outputText value="Cidade: "/>
+                        <h:outputText value="#{clienteMB.cliente.cidade.nome}" />
+                        <h:outputText value="Estado"/>
+                        <h:outputText value="#{clienteMB.cliente.cidade.estado}" />
+
+                    </p:panelGrid>
+
+                </p:dialog> 
+            </h:form>
+        </div>
+
+    </h:body>
+</html>
+

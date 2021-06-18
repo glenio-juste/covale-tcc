@@ -1,0 +1,227 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>Cadastro de Produtos</title>
+    </h:head>
+    <h:body>
+        <div align="center">
+            <h:form id="cadProPrincipal">
+
+                <body bgcolor="#CEF6EC">
+
+                    <p:growl id="growl" showDetail="true"  life="7000" autoUpdate="true"/>
+                    <p:dataTable var="lista" value="#{produtoMB.produtos}" id="tabelaProduto" rows="8" paginator="true">
+                        <f:facet name="header">
+                            <h3>Produtos Cadastrados</h3>
+                        </f:facet>
+                        <p:column headerText="Ações" width="75">
+                            <p:commandLink title="Alterar" update=":cadProAlterar:Alterar" oncomplete="dialogAlterar.show()" immediate="true">
+                                <p:graphicImage value="./imagens/editar.png" />
+                                <f:setPropertyActionListener target="#{produtoMB.produto}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                            <p:commandLink title="Excluir" update=":cadProExcluir:Excluir" oncomplete="confirmation.show()" immediate="true" >
+                                <p:graphicImage value="./imagens/inativo.png" />
+                                <f:setPropertyActionListener target="#{produtoMB.produto}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+
+                            <p:commandLink title="Visualizar" update=":cadProVisualizar:Visualizar" oncomplete="dialogVisualizar.show()" immediate="true" >
+                                <p:graphicImage value="./imagens/visualizar.png" />
+                                <f:setPropertyActionListener target="#{produtoMB.produto}"
+                                                             value="#{lista}"/>
+                            </p:commandLink>                                                  
+
+                        </p:column>
+                        <p:column headerText="Nome" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Marca" >
+                            <h:outputText value="#{lista.marca}" />
+                        </p:column>
+                        <p:column headerText="Grupo" >
+                            <h:outputText value="#{lista.grupo}" />
+                        </p:column>
+                        <p:column headerText="Quantidade" >
+                            <h:outputText value="#{lista.quantidade}" />
+                        </p:column>
+                        <p:column headerText="Medida" >
+                            <h:outputText value="#{lista.medida}" />
+                        </p:column>
+                        <p:column headerText="Valor Unit Compra" >
+                            <h:outputText value="#{lista.preco_compra}" />
+                        </p:column>
+                        <p:column headerText="Valor Unit Venda" >
+                            <h:outputText value="#{lista.val_unit}" />
+                        </p:column>
+                    </p:dataTable>
+                    <p:commandButton update=":cadProCadastrar:Cadastrar" value="Novo"
+                                     oncomplete="dialogCadastrar.show()" />
+                    <p:commandButton oncomplete="dialogBuscar.show()" value="Busca"/>
+                    <p:commandButton update=":cadProPrincipal:tabelaProduto" value="Limpar Busca"
+                                     actionListener="#{produtoMB.limparBusca}" />
+                    
+                    <p:commandButton oncomplete="dialog.show()" value="Menu" action="menu?faces-redirect=true"/>
+                    <h:commandLink action="menu?faces-redirect=true"/>
+
+                </body>
+
+            </h:form>
+        </div>
+        <div align="center">
+
+            <h:form id="cadProAlterar">
+                <p:dialog header="Alterar Produto" widgetVar="dialogAlterar" modal="true"
+                          id="Alterar">
+                    <p:panelGrid id="panelAlterar" columns="2">
+                        <h:outputText value="Nome: "/>
+                        <p:inputText value="#{produtoMB.produto.nome}" maxlength="30" size="51"/>
+                        <h:outputText value="Marca: "/>
+                        <p:inputText value="#{produtoMB.produto.marca}" maxlength="30" size="51"/>
+                        <h:outputText value="Grupo: "/>
+                        <p:inputText value="#{produtoMB.produto.grupo}" maxlength="100" size="51"/>
+                        <h:outputText value="Quantidade: "/>
+                        <p:inputText value="#{produtoMB.produto.quantidade}" maxlength="20" size="51"/>
+
+                        <h:outputText value="Unidade de Medida: "/>
+                        <h:selectOneMenu value="#{produtoMB.produto.medida}">
+                            <f:selectItem itemValue="Selecione a Medida"/>
+                            <f:selectItem itemValue="Kilo"/>
+                            <f:selectItem itemValue="Litro"/>
+                            <f:selectItem itemValue="Metro"/>
+                            <f:selectItem itemValue="Unidade"/>
+                        </h:selectOneMenu>
+
+                        <h:outputText value="Valor Unit Compra: "/>
+                        <p:inputText value="#{produtoMB.produto.preco_compra}" maxlength="30" size="51"/>
+                        <h:outputText value="Valor Unit Venda: "/>
+                        <p:inputText value="#{produtoMB.produto.val_unit}" maxlength="20" size="51"/>
+
+                    </p:panelGrid>
+                    <p:commandButton value="Alterar"
+                                     actionListener="#{produtoMB.alterar}"
+                                     update=":cadProPrincipal:tabelaProduto"
+                                     oncomplete="dialogAlterar.hide()" />
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="dialogAlterar.hide()" 
+                                     actionListener="#{produtoMB.cancelar}"/>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadProCadastrar">
+                <p:dialog header="Cadastrar Produto" widgetVar="dialogCadastrar" modal="true"
+                          id="Cadastrar">
+                    <p:panelGrid id="panelAlterar" columns="2">
+                        <h:outputText value="Nome: "/>
+                        <p:inputText value="#{produtoMB.produto.nome}" maxlength="30" size="51"/>
+                        <h:outputText value="Marca: "/>
+                        <p:inputText value="#{produtoMB.produto.marca}" maxlength="30" size="51"/>
+                        <h:outputText value="Grupo: "/>
+                        <p:inputText value="#{produtoMB.produto.grupo}" maxlength="15" size="51"/>
+                        <h:outputText value="Quantidade Estoque"/>
+                        <p:inputText value="#{produtoMB.produto.quantidade}" maxlength="10" size="51"/>
+                        
+                        <h:outputText value="Unidade de Medida: "/>
+                        <h:selectOneMenu value="#{produtoMB.produto.medida}">
+                            <f:selectItem itemValue="Selecione a Medida"/>
+                            <f:selectItem itemValue="Kilo"/>
+                            <f:selectItem itemValue="Litro"/>
+                            <f:selectItem itemValue="Metro"/>
+                            <f:selectItem itemValue="Unidade"/>
+                        </h:selectOneMenu>
+
+                        <h:outputText value="Valor Unit Compra: "/>
+                        <p:inputText value="#{produtoMB.produto.preco_compra}" maxlength="30" size="51"/>
+                        <h:outputText value="Valor Unit Venda: "/>
+                        <p:inputText value="#{produtoMB.produto.val_unit}" maxlength="20" size="51"/>
+
+                    </p:panelGrid>
+                    <p:commandButton value="Cadastrar"
+                                     actionListener="#{produtoMB.cadastrar}"
+                                     update=":cadProPrincipal:tabelaProduto"
+                                     oncomplete="dialogCadastrar.hide()" />
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="dialogCadastrar.hide()" 
+                                     actionListener="#{produtoMB.cancelar}"/>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadProExcluir">
+                <p:confirmDialog id="Excluir"
+                                 message="Você gostaria de excluir o produto #{produtoMB.produto.nome}?"
+                                 header="Excluir" severity="alert" widgetVar="confirmation" >
+                    <p:commandButton id="confirm" value="Sim"
+                                     oncomplete="confirmation.hide()"
+                                     actionListener="#{produtoMB.apagar}"
+                                     update=":cadProPrincipal:tabelaProduto" />
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="confirmation.hide()" 
+                                     actionListener="#{produtoMB.cancelar}"/>
+                </p:confirmDialog>
+            </h:form>
+        </div>
+        <div align="center">
+            <h:form id="cadProBuscar">
+                <p:dialog header="Buscar Produto" widgetVar="dialogBuscar" modal="true"
+                          id="Buscar">
+                    <p:panelGrid id="panelBuscar" columns="2">
+                        <h:outputText value="Nome: "/>
+                        <p:inputText value="#{produtoMB.produto.nome}" maxlength="30" size="51"/>
+                        <h:outputText value="Marca: "/>
+                        <p:inputText value="#{produtoMB.produto.marca}" maxlength="30" size="51"/>
+                        <h:outputText value="Grupo: "/>
+                        <p:inputText value="#{produtoMB.produto.grupo}" maxlength="100" size="51"/>
+                        <h:outputText value="Quantidade: "/>
+                        <p:inputText value="#{produtoMB.produto.quantidade}" maxlength="20" size="51"/>
+                        <h:outputText value="Valor Unit Compra: "/>
+                        <p:inputText value="#{produtoMB.produto.preco_compra}" maxlength="30" size="51"/>
+                        <h:outputText value="Valor Unit Venda: "/>
+                        <p:inputText value="#{produtoMB.produto.val_unit}" maxlength="20" size="51"/>
+
+                    </p:panelGrid>
+                    <p:commandButton value="Buscar"
+                                     actionListener="#{produtoMB.busca}"
+                                     update=":cadProPrincipal:tabelaProduto" 
+                                     oncomplete="dialogBuscar.hide()"/>
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="dialogBuscar.hide()" 
+                                     actionListener="#{produtoMB.cancelar}" />
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadProVisualizar">
+                <p:dialog header="Ficha Cadastral" widgetVar="dialogVisualizar" modal="true"
+                          id="Visualizar">
+                    <p:panelGrid id="panelVisualizar" columns="2">
+                        <h:outputText value="Nome: "/>
+                        <h:outputText value="#{produtoMB.produto.nome}" /> 
+                        <h:outputText value="Marca: "/>
+                        <h:outputText value="#{produtoMB.produto.marca}" />
+                        <h:outputText value="Grupo: "/>
+                        <h:outputText value="#{produtoMB.produto.grupo}" />
+                        <h:outputText value="Quantidade: "/>
+                        <h:outputText value="#{produtoMB.produto.quantidade}" />
+                        <h:outputText value="Medida"/>
+                        <h:outputText value="#{produtoMB.produto.medida}"/>
+                        <h:outputText value="Valor Unit Compra: "/>
+                        <h:outputText value="#{produtoMB.produto.preco_compra}"/>
+                        <h:outputText value="Valor Unit Venda: "/>
+                        <h:outputText value="#{produtoMB.produto.val_unit}"/>
+                    </p:panelGrid>
+
+                </p:dialog> 
+            </h:form>
+        </div>
+
+    </h:body>
+</html>

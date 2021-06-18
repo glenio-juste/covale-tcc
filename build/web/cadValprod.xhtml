@@ -1,0 +1,306 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>Cadastro de Validades</title>
+    </h:head>
+    <h:body>
+        <div align="center">
+
+            <h:form id="cadVapPrincipal">
+
+                <body bgcolor="#CEF6EC">
+
+                    <p:growl id="growl" showDetail="true"  life="7000" autoUpdate="true"/>
+                    <p:dataTable var="lista" value="#{valprodMB.valprods}" id="tabelaValprod" rows="8" paginator="true">
+                        <f:facet name="header">
+                            <h3>Data de Validade dos Produtos</h3>
+                        </f:facet>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Alterar" update=":cadVapAlterar:Alterar" oncomplete="dialogAlterar.show()" immediate="true">
+                                <p:graphicImage value="./imagens/editar.png" />
+                                <f:setPropertyActionListener target="#{valprodMB.valprod}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                            <p:commandLink title="Excluir" update=":cadVapExcluir:Excluir" oncomplete="confirmation.show()" immediate="true" >
+                                <p:graphicImage value="./imagens/inativo.png" />
+                                <f:setPropertyActionListener target="#{valprodMB.valprod}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+
+                            <p:commandLink title="Visualizar" update=":cadVapVisualizar:Visualizar" oncomplete="dialogVisualizar.show()" immediate="true" >
+                                <p:graphicImage value="./imagens/visualizar.png" />
+                                <f:setPropertyActionListener target="#{valprodMB.valprod}"
+                                                             value="#{lista}"/>
+                            </p:commandLink>
+
+                        </p:column>
+
+                        <p:column headerText="Produto" >
+                            <h:outputText value="#{lista.produto.nome}" />
+                        </p:column>
+
+                        <p:column headerText="Data da Compra" >
+                            <h:outputText value="#{lista.data_compra}" />
+                        </p:column>
+                        <p:column headerText="Lote" >
+                            <h:outputText value="#{lista.lote}" />
+                        </p:column>
+                        <p:column headerText="Validade" >
+                            <h:outputText value="#{lista.data_validade}" />
+                        </p:column>
+                        <p:column headerText="Verificado" >
+                            <h:outputText value="#{lista.verifica}" />
+                        </p:column>
+
+                    </p:dataTable>
+                    <p:commandButton update=":cadVapCadastrar:Cadastrar" value="Novo"
+                                     oncomplete="dialogCadastrar.show()" />
+                    <p:commandButton oncomplete="dialogBuscar.show()" value="Buscar"
+                                     update=":cadVapBuscar:Buscar"/>
+                    <p:commandButton update=":cadVapPrincipal:tabelaValprod" value="Limpar Busca"
+                                     actionListener="#{valprodMB.limparBusca}" />
+
+                    <p:commandButton oncomplete="dialog.show()" value="Menu" action="menu?faces-redirect=true"/>
+                    <h:commandLink action="menu?faces-redirect=true"/>
+
+                </body>
+
+            </h:form>
+        </div>
+        <div align="center">
+            <h:form id="cadVapAlterar">
+                <p:dialog header="Alterar Validade" widgetVar="dialogAlterar" modal="true"
+                          id="Alterar">
+                    <p:panelGrid id="panelAlterar" columns="2">
+
+                        <h:outputText value="Produto: "/>
+                        <p:column >
+                            <p:inputText value="#{valprodMB.valprod.produto.nome}" disabled="true"/>
+                            <p:commandButton value="..." 
+                                             oncomplete="dialogAlterar.hide();dialogAlterarVap.show()" 
+                                             update=":cadVapProAlterar:Alterar"/>
+                        </p:column>
+
+                        <h:outputText value="Data da Compra: "/>
+                        <p:inputMask mask="99/99/9999" value="#{valprodMB.valprod.data_compra}" maxlength="12" size="20"/>
+                        <h:outputText value="Lote: "/>
+                        <p:inputText value="#{valprodMB.valprod.lote}" maxlength="15" size="20"/>
+                        <h:outputText value="Validade: "/>
+                        <p:inputMask mask="99/99/9999" value="#{valprodMB.valprod.data_validade}" maxlength="12" size="20"/>
+
+                        <h:outputText value="Verificado: "/>
+                        <h:selectOneMenu value="#{valprodMB.valprod.verifica}">
+                            <f:selectItem itemValue="Selecione uma opção"/>
+                            <f:selectItem itemValue="Sim"/>
+                            <f:selectItem itemValue="Não"/>
+                        </h:selectOneMenu>
+
+                    </p:panelGrid>
+                    <p:commandButton value="Alterar"
+                                     actionListener="#{valprodMB.alterar}"
+                                     update=":cadVapPrincipal:tabelaValprod"
+                                     oncomplete="dialogAlterar.hide()" />
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="dialogAlterar.hide()" 
+                                     actionListener="#{valprodMB.cancelar}"/>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadVapProAlterar">
+                <p:dialog header="Alterar Dados" widgetVar="dialogAlterarVap" modal="true"
+                          id="Alterar" closable="false">
+                    <p:dataTable var="lista" value="#{valprodMB.produto}" id="tabelaProduto" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Lista de Produto(s) Cadastrados</h3>
+                        </f:facet>
+                        <p:column headerText="Produto" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadVapAlterar:Alterar" 
+                                           oncomplete="dialogAlterarVap.hide();dialogAlterar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{valprodMB.valprod.produto}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadVapCadastrar">
+                <p:dialog header="Cadastrar" widgetVar="dialogCadastrar" modal="true"
+                          id="Cadastrar">
+                    <p:panelGrid id="panelAlterar" columns="2">
+
+                        <h:outputText value="Produto: "/>
+                        <p:column>
+                            <p:inputText value="#{valprodMB.valprod.produto.nome}" disabled="true"/>
+                            <p:commandButton value="..." oncomplete="dialogCadastrar.hide();dialogIncluirVap.show()" 
+                                             update=""/>
+                        </p:column>
+
+                        <h:outputText value="Data da Compra: "/>
+                        <p:inputMask mask="99/99/9999" value="#{valprodMB.valprod.data_compra}" maxlength="12" size="20"/>
+                        <h:outputText value="Lote: "/>
+                        <p:inputText value="#{valprodMB.valprod.lote}" maxlength="15" size="20"/>
+                        <h:outputText value="Validade: * "/>
+                        <p:inputMask mask="99/99/9999" value="#{valprodMB.valprod.data_validade}" maxlength="12" size="20"/>
+
+                        <h:outputText value="Verificado: "/>
+                        <h:selectOneMenu value="#{valprodMB.valprod.verifica}">
+                            <f:selectItem itemValue="Selecione uma opção"/>
+                            <f:selectItem itemValue="Sim"/>
+                            <f:selectItem itemValue="Não"/>
+                        </h:selectOneMenu>
+
+                    </p:panelGrid>
+                    <p:commandButton value="Cadastrar"
+                                     actionListener="#{valprodMB.cadastrar}"
+                                     update=":cadVapPrincipal:tabelaValprod"
+                                     oncomplete="dialogCadastrar.hide()" />
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="dialogCadastrar.hide()" 
+                                     actionListener="#{valprodMB.cancelar}"/>
+
+                    <div align="center">
+                        <h:outputText value="* Preenchimento obrigatório"/>
+                    </div>
+
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadVapProIncluir">
+                <p:dialog header="Incluir" widgetVar="dialogIncluirVap" modal="true"
+                          id="Incluir" closable="false">
+                    <p:dataTable var="lista" value="#{valprodMB.produto}" id="tabelaProduto" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Lista de Produtoss Cadastrados</h3>
+                        </f:facet>
+                        <p:column headerText="Produto" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadVapCadastrar:Cadastrar" 
+                                           oncomplete="dialogIncluirVap.hide();dialogCadastrar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{valprodMB.valprod.produto}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadVapExcluir">
+                <p:confirmDialog id="Excluir"
+                                 message="Você desja mesmo excluir? #{valprodMB.valprod.data_compra}?"
+                                 header="Excluir" severity="alert" widgetVar="confirmation" >
+                    <p:commandButton id="confirm" value="Sim"
+                                     oncomplete="confirmation.hide()"
+                                     actionListener="#{valprodMB.apagar}"
+                                     update=":cadVapPrincipal:tabelaValprod" />
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="confirmation.hide()" 
+                                     actionListener="#{valprodMB.cancelar}"/>
+                </p:confirmDialog>
+            </h:form>
+        </div>
+        <div align="center">
+            <h:form id="cadVapBuscar">
+                <p:dialog header="Buscar" widgetVar="dialogBuscar" modal="true"
+                          id="Buscar">
+                    <p:panelGrid id="panelBuscar" columns="2">
+
+                        <h:outputText value="Produto: "/>
+                        <p:column>
+                            <p:inputText value="#{valprodMB.valprod.produto.nome}" />
+                            <p:commandButton value="..." oncomplete="dialogBuscar.hide();dialogBuscarPro.show()"
+                                             update=":cadVapProBusca:Buscar"/>
+                        </p:column>
+
+                        <h:outputText value="Data da Compra: "/>
+                        <p:inputText value="#{valprodMB.valprod.data_compra}" maxlength="12" size="20"/>
+                        
+                        <h:outputText value="Lote: "/>
+                        <p:inputText value="#{valprodMB.valprod.lote}" maxlength="15" size="20"/>
+                        <h:outputText value="Validade: "/>
+                        <p:inputText value="#{valprodMB.valprod.data_validade}" maxlength="12" size="20"/>
+                        <h:outputText value="Verificado: "/>
+                        <p:inputText value="#{valprodMB.valprod.verifica}" maxlength="15" size="20"/>
+
+                    </p:panelGrid>
+                    <p:commandButton value="Buscar"
+                                     actionListener="#{valprodMB.busca}"
+                                     update=":cadVapPrincipal:tabelaValprod" 
+                                     oncomplete="dialogBuscar.hide()"/>
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="dialogBuscar.hide()" 
+                                     actionListener="#{valprodMB.cancelar}" />
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadVapProBusca">
+                <p:dialog header="Buscar" widgetVar="dialogBuscarPro" modal="true"
+                          id="Buscar" closable="false">
+                    <p:dataTable var="lista" value="#{valprodMB.produto}" id="tabelaProduto" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Lista de Produto(s) Cadastrados</h3>
+                        </f:facet>
+                        <p:column headerText="Produto" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadVapBuscar:Buscar" 
+                                           oncomplete="dialogBuscarPro.hide();dialogBuscar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{valprodMB.valprod.produto}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadVapVisualizar">
+                <p:dialog header="Dados de Cadastro" widgetVar="dialogVisualizar" modal="true"
+                          id="Visualizar">
+                    <p:panelGrid id="panelVisualizar" columns="2">
+                        <h:outputText value="Produto: "/>
+                        <h:outputText value="#{valprodMB.valprod.produto.nome}" />
+                        <h:outputText value="Data da Compra: "/>
+                        <h:outputText value="#{valprodMB.valprod.data_compra}" /> 
+                        <h:outputText value="Lote: "/>
+                        <h:outputText value="#{valprodMB.valprod.lote}" />
+                        <h:outputText value="Validade: "/>
+                        <h:outputText value="#{valprodMB.valprod.data_validade}" />
+                        <h:outputText value="Verificado: "/>
+                        <h:outputText value="#{valprodMB.valprod.verifica}" />
+
+                    </p:panelGrid>
+
+                </p:dialog> 
+            </h:form>
+        </div>        
+
+    </h:body>
+</html>

@@ -1,0 +1,159 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:form>
+
+        <body bgcolor="#CEF6EC">
+
+            <div align="center">
+                <font color="#OB61OB">
+                    <h:outputText value="COVALE AGRÍCOLA" style="font-size: 50px;" />
+                </font>
+
+
+                <h:panelGrid columns="5" cellspacing="30" width="85%">
+
+                    <h:commandLink action="cadCidade?faces-redirect=true">
+                        <p:graphicImage  value="./imagens/cidade.png" title="Cidade"/>
+                        <font color="#OB61OB">
+                            <br/>
+                            <b>
+                                <h:outputText value="Cidade" style="font-size: 20px;"/>
+                            </b>
+                        </font>
+                    </h:commandLink>
+
+                    <h:commandLink action="cadCliente?faces-redirect=true">
+                        <p:graphicImage  value="./imagens/cliente.png" title="Cliente"/>
+                        <font color="#OB61OB">
+                            <br/>
+                            <b>
+                                <h:outputText value="Cliente" style="font-size: 20px;"/>
+                            </b>
+                        </font>
+                    </h:commandLink>
+
+
+                    <h:commandLink action="cadFornecedor?faces-redirect=true">
+                        <p:graphicImage  value="./imagens/fornecedor.png" title="Fornecedor"/>
+                        <font color="#OB61OB">
+                            <br/>
+                            <b>
+                                <h:outputText value="Fornecedor" style="font-size: 20px;"/>
+                            </b>
+                        </font>
+                    </h:commandLink>
+
+                    <h:commandLink action="cadVendedor?faces-redirect=true">
+                        <p:graphicImage  value="./imagens/vendedor.png" title="Vendedor"/>
+                        <font color="#OB61OB">
+                            <br/>
+                            <b>
+                                <h:outputText value="Vendedor" style="font-size: 20px;"/>
+                            </b>
+                        </font>
+                    </h:commandLink>
+
+                    <h:commandLink action="cadProduto?faces-redirect=true">
+                        <p:graphicImage  value="./imagens/produto.png" title="Produto"/>
+                        <font color="#OB61OB">
+                            <br/>
+                            <b>
+                                <h:outputText value="Produto" style="font-size: 20px;"/>
+                            </b>
+                        </font>
+                    </h:commandLink>
+
+                    <div align="center">
+
+                        <h:commandLink action="cadCompra?faces-redirect=true">
+                            <p:graphicImage  value="./imagens/compra.png" title="Compra"/>
+                            <font color="#OB61OB">
+                                <br/>
+                                <b>
+                                    <h:outputText value="Compra" style="font-size: 20px;"/>
+                                </b>
+                            </font>
+                        </h:commandLink>
+
+                        <h:commandLink action="cadValprod?faces-redirect=true">
+                            <p:graphicImage  value="./imagens/validade.png" title="Validade"/>
+                            <font color="#OB61OB">
+                                <br/>
+                                <b>
+                                    <h:outputText value="Validade" style="font-size: 20px;"/>
+                                </b>
+                            </font>
+                        </h:commandLink>
+
+                        <h:commandLink action="cadVenda?faces-redrect=true">
+                            <p:graphicImage value="./imagens/venda.png" title="Venda"/>
+                            <font color="#OB61OB">
+                                <br/>
+                                <b>
+                                    <h:outputText value="Venda" style="font-size: 20px;"/>
+                                </b>
+                            </font>
+                        </h:commandLink>
+
+                    </div>
+
+                    <h:commandLink action="cadFormapag?faces-redrect=true">
+                        <p:graphicImage value="./imagens/formapag.png" title="Formas de Pag"/>
+                        <font color="#OB61OB">
+                            <br/>
+                            <b>
+                                <h:outputText value="Formas de Pag" style="font-size: 20px;"/>
+                            </b>
+                        </font>
+                    </h:commandLink>
+
+                    <h:commandLink action="cadCondpag?faces-redrect=true">
+                        <p:graphicImage value="./imagens/condpag.png" title="Condições de Pag"/>
+                        <font color="#OB61OB">
+                            <br/>
+                            <b>
+                                <h:outputText value="Prazos de Pag" style="font-size: 20px;"/>
+                            </b>
+                        </font>
+                    </h:commandLink>
+
+                    <h:commandLink action="cadCaixa?faces-redirect=true">
+                        <p:graphicImage  value="./imagens/caixa.png" title="Caixa"/>
+                        <font color="#OB61OB">
+                            <br/>
+                            <b>
+                                <h:outputText value="Caixa" style="font-size: 20px;"/>
+                            </b>
+                        </font>
+                    </h:commandLink>
+
+                    <h:commandLink action="menuRelatorios?faces-redirect=true">
+                        <p:graphicImage  value="./imagens/relatorio.png" title="Relatorios"/>
+                        <font color="#OB61OB">
+                            <br/>
+                            <b>
+                                <h:outputText value="Relatórios" style="font-size: 20px;"/>
+                            </b>
+                        </font>
+                    </h:commandLink>
+
+                    <h:outputLink value="/Covale/login.jsp">
+                        <p:graphicImage  value="./imagens/sair.png" title="Relatorios"/>
+                        <font color="#OB61OB">
+                            <br/>
+                            <b>
+                                <h:outputText value="Sair" style="font-size: 20px;"/>
+                            </b>
+                        </font>
+                    </h:outputLink>
+
+
+                </h:panelGrid>
+
+            </div>
+        </body>
+
+    </h:form>
+</html>

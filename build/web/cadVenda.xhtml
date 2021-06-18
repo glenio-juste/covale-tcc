@@ -1,0 +1,763 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>Cadastro de Vendas</title>
+    </h:head>
+    <h:body>
+        <div align="center">
+            <h:form id="cadVenPrincipal">
+
+                <body bgcolor="#CEF6EC">
+
+                    <p:growl id="growl" showDetail="true"  life="7000" autoUpdate="true"/>
+                    <p:dataTable var="lista" value="#{vendaMB.vendas}" id="tabelaVenda" rows="8" paginator="true">
+                        <f:facet name="header">
+                            <h3>Vendas Cadastradas</h3>
+                        </f:facet>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Alterar" update=":cadVenAlterar:Alterar" action="#{vendaMB.produtosNotVen}" oncomplete="dialogAlterar.show()" immediate="true">
+                                <p:graphicImage value="./imagens/editar.png" />
+                                <f:setPropertyActionListener target="#{vendaMB.venda}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                            <p:commandLink title="Excluir" update=":cadVenExcluir:Excluir" oncomplete="confirmation.show()" immediate="true" >
+                                <p:graphicImage value="./imagens/inativo.png" />
+                                <f:setPropertyActionListener target="#{vendaMB.venda}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+
+                            <p:commandLink title="Visualizar" update=":cadVenVisualizar:Visualizar" oncomplete="dialogVisualizar.show()" immediate="true">  
+                                <p:graphicImage value="./imagens/visualizar.png" />
+                                <f:setPropertyActionListener target="#{vendaMB.venda}"
+                                                             value="#{lista}"/>
+                            </p:commandLink>
+
+                        </p:column>
+                        <p:column headerText="Data" >
+                            <h:outputText value="#{lista.data}" />
+                        </p:column>
+                        <p:column headerText="Valor" >
+                            <h:outputText value="#{lista.valor}" />
+                        </p:column>
+                        <p:column headerText="NF" >
+                            <h:outputText value="#{lista.nfv}" />
+                        </p:column>
+                        <p:column headerText="Condição Pagamento">
+                            <h:outputText value="#{lista.condpag.descricao}"/>
+                        </p:column>
+                        <p:column headerText="Forma Pagamento" >
+                            <h:outputText value="#{lista.formapag.descricao}"/>
+                        </p:column>
+                        <p:column headerText="Cliente" >
+                            <h:outputText value="#{lista.cliente.nome}"/>
+                        </p:column>
+                        <p:column headerText="Vendedor" >
+                            <h:outputText value="#{lista.vendedor.nome}"/>
+                        </p:column>
+                    </p:dataTable>
+                    <p:commandButton update=":cadVenCadastrar:Cadastrar" value="Novo"
+                                     oncomplete="dialogCadastrar.show()" actionListener="#{vendaMB.edit}" />
+                    <p:commandButton oncomplete="dialogBuscar.show()" value="Buscar"
+                                     update=":cadVenBuscar:Buscar"/>
+                    <p:commandButton update=":cadVenPrincipal:tabelaVenda" value="Limpar Busca"
+                                     actionListener="#{vendaMB.limparBusca}" />
+
+                    <p:commandButton oncomplete="dialog.show()" value="Caixa" action="cadCaixa?faces-redirect=true"/>
+                    <h:commandLink action="cadCaixa?faces-redirect=true"/>
+
+                    <p:commandButton oncomplete="dialog.show()" value="Menu" action="menu?faces-redirect=true"/>
+                    <h:commandLink action="menu?faces-redirect=true"/>
+
+                </body>
+
+            </h:form>
+        </div>
+        <div align="center">
+            <h:form id="cadVenAlterar">
+                <p:dialog header="Alterar Venda" widgetVar="dialogAlterar" modal="true"
+                          id="Alterar">
+                    <p:panelGrid id="panelAlterar" columns="4">
+                        <h:outputText value="Selecionar Produtos" />
+                        <p:column >
+                            <p:inputText value="#{vendaMB.produto.nome}" disabled="true" />
+                            <p:commandButton value="..." action="#{vendaMB.produtosNotVen}" update=":cadVenProAlterar:Produto" oncomplete="dialogAlterar.hide(); dialogProdutoAlt.show()"/>
+                            <h:outputText value="Quantidade: "/>
+                            <p:inputText value="#{vendaMB.produto.quantidadeVenda}" />
+                            <p:commandButton value="Adicionar" actionListener="#{vendaMB.addProduto}" update=":cadVenAlterar:Alterar" oncomplete="dialogAlterar.show()"/>
+                        </p:column>
+
+                    </p:panelGrid>
+                    <p:dataTable var="lista" value="#{vendaMB.venda.produtos}" id="tabelaProduto" rows="5" paginator="true">
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="excluir" update=":cadVenAlterar:Alterar" 
+                                           oncomplete="dialogAlterar.show()" 
+                                           actionListener="#{vendaMB.removeProduto(lista)}" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/inativo.png" />
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Produto" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Quantidade" >
+                            <h:outputText value="#{lista.quantidadeVenda}" />
+                        </p:column>
+                        <p:column headerText="Valor Unitário" >
+                            <h:outputText value="#{lista.val_unit}" />
+                        </p:column>
+
+                    </p:dataTable>
+
+                    <p:panelGrid id="panelAlterar1" columns="4">
+
+                        <h:outputText value="Data: "/>
+                        <p:inputMask mask="99/99/9999" value="#{vendaMB.venda.data}" maxlength="12" size="20"/>
+                        <h:outputText value="NF:" />
+                        <p:inputText value="#{vendaMB.venda.nfv}" maxlength="20" size="20"/>
+
+                        <h:outputText value="Condição de Pagamento"/>
+                        <p:column >
+                            <p:inputText value="#{vendaMB.venda.condpag.descricao}" disabled="true"/>
+                            <p:commandButton value="..." 
+                                             oncomplete="dialogAlterar.hide();dialogAlterarCon.show()" 
+                                             update=":cadVenConAlterar:Alterar"/>
+                        </p:column>
+                        <h:outputText value="Forma de Pagamento"/>
+                        <p:column >
+                            <p:inputText value="#{vendaMB.venda.formapag.descricao}" disabled="true"/>
+                            <p:commandButton value="..." 
+                                             oncomplete="dialogAlterar.hide();dialogAlterarFop.show()" 
+                                             update=":cadVenFopAlterar:Alterar"/>
+                        </p:column>
+                        <h:outputText value="Cliente"/>
+                        <p:column >
+                            <p:inputText value="#{vendaMB.venda.cliente.nome}" disabled="true"/>
+                            <p:commandButton value="..." 
+                                             oncomplete="dialogAlterar.hide();dialogAlterarCli.show()" 
+                                             update=":cadVenCliAlterar:Alterar"/>
+                        </p:column>
+                        <h:outputText value="Vendedor"/>
+                        <p:column >
+                            <p:inputText value="#{vendaMB.venda.vendedor.nome}" disabled="true"/>
+                            <p:commandButton value="..." 
+                                             oncomplete="dialogAlterar.hide();dialogAlterarVen.show()" 
+                                             update=":cadVenVenAlterar:Alterar"/>
+                        </p:column>
+
+                    </p:panelGrid>
+
+                    <br/>
+
+                    <h:outputText value="Valor Total: R$ "/>
+                    <p:inputText value="#{vendaMB.venda.valor}" maxlength="10" size="15"/>
+
+                    <br/>
+                    <br/>
+
+                    <p:commandButton value="Confirmar"
+                                     actionListener="#{vendaMB.alterar}"
+                                     update=":cadVenPrincipal:tabelaVenda"
+                                     oncomplete="dialogAlterar.hide()" />
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="dialogAlterar.hide()" 
+                                     actionListener="#{vendaMB.cancelar}"/>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadVenConAlterar">
+                <p:dialog header="Alterar" widgetVar="dialogAlterarCon" modal="true"
+                          id="Alterar" closable="false">
+                    <p:dataTable var="lista" value="#{vendaMB.condpag}" id="tabelaCondpag" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Condição de Pagamento</h3>
+                        </f:facet>
+                        <p:column headerText="Condição" >
+                            <h:outputText value="#{lista.descricao}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadVenAlterar:Alterar" 
+                                           oncomplete="dialogAlterarCon.hide();dialogAlterar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{vendaMB.venda.condpag}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+
+        <div align="center">
+            <h:form id="cadVenFopAlterar">
+                <p:dialog header="Alterar" widgetVar="dialogAlterarFop" modal="true"
+                          id="Alterar" closable="false">
+                    <p:dataTable var="lista" value="#{vendaMB.formapag}" id="tabelaFormapag" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Forma de Pagamento</h3>
+                        </f:facet>
+                        <p:column headerText="Forma" >
+                            <h:outputText value="#{lista.descricao}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadVenAlterar:Alterar" 
+                                           oncomplete="dialogAlterarFop.hide();dialogAlterar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{vendaMB.venda.formapag}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+
+        <div align="center">
+            <h:form id="cadVenCliAlterar">
+                <p:dialog header="Alterar" widgetVar="dialogAlterarCli" modal="true"
+                          id="Alterar" closable="false">
+                    <p:dataTable var="lista" value="#{vendaMB.cliente}" id="tabelaCliente" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Cliente</h3>
+                        </f:facet>
+                        <p:column headerText="Cliente" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadVenAlterar:Alterar" 
+                                           oncomplete="dialogAlterarCli.hide();dialogAlterar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{vendaMB.venda.cliente}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+
+        <div align="center">
+            <h:form id="cadVenVenAlterar">
+                <p:dialog header="Alterar" widgetVar="dialogAlterarVen" modal="true"
+                          id="Alterar" closable="false">
+                    <p:dataTable var="lista" value="#{vendaMB.vendedor}" id="tabelaVendedor" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Vendedor</h3>
+                        </f:facet>
+                        <p:column headerText="Vendedor" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadVenAlterar:Alterar" 
+                                           oncomplete="dialogAlterarVen.hide();dialogAlterar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{vendaMB.venda.vendedor}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadVenProAlterar">
+                <p:dialog header="Produto" widgetVar="dialogProdutoAlt" modal="true"
+                          id="Produto" closable="false">
+                    <p:dataTable var="lista" value="#{vendaMB.produtos}" id="tabelaProduto" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Lista de Produtos</h3>
+                        </f:facet>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="selecionar" update=":cadVenAlterar:Alterar" 
+                                           oncomplete="dialogAlterar.show(); dialogProdutoAlt.hide()" 
+
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener value="#{lista}" target="#{vendaMB.produto}"/>
+                                <f:setPropertyActionListener value="" target="#{vendaMB.produto.quantidadeVenda}"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Produto" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Estoque" >
+                            <h:outputText value="#{lista.quantidade}" />
+                        </p:column>
+                        <p:column headerText="Valor Unitário" >
+                            <h:outputText value="#{lista.val_unit}" />
+                        </p:column>
+
+                    </p:dataTable>
+                    <p:commandButton value="Cancelar" oncomplete="dialogAlterar.show(); dialogProdutoAlt.hide()"/>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadVenCadastrar">
+                <p:dialog header="Cadastrar Venda" widgetVar="dialogCadastrar" modal="true"
+                          id="Cadastrar">
+                    <p:panelGrid id="panelAlterar" columns="4">
+
+
+
+                    </p:panelGrid>
+
+                    <h:outputText value="Selecionar Produtos" />
+                    <p:column >
+                        <p:inputText value="#{vendaMB.produto.nome}" disabled="true" />
+                        <p:commandButton value="..." action="#{vendaMB.produtosNotVen}" update=":cadVenProCadastrar:Produto" oncomplete="dialogCadastrar.hide(); dialogProduto.show()"/>
+                    </p:column>
+                    <h:outputText value="Digite a Quantidade"/>
+                    <p:column>
+                        <p:inputText value="#{vendaMB.produto.quantidadeVenda}" />
+                        <p:commandButton value="Adicionar" actionListener="#{vendaMB.addProduto}" update=":cadVenCadastrar:Cadastrar" oncomplete="dialogCadastrar.show()"/>
+                    </p:column>
+
+                    <p:dataTable var="lista" value="#{vendaMB.venda.produtos}" id="tabelaProduto" rows="2" paginator="true">
+
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="excluir" update=":cadVenCadastrar:Cadastrar" 
+                                           oncomplete="dialogCadastrar.show()" 
+                                           actionListener="#{vendaMB.removeProduto(lista)}"
+                                           immediate="true"> <!-- tirar o immediate pq ele não limpa o valor -->
+                                <p:graphicImage value="./imagens/inativo.png" />
+                            </p:commandLink>
+                        </p:column>
+
+                        <p:column headerText="Produto(s)" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Quantidade" >
+                            <h:outputText value="#{lista.quantidadeVenda}" />
+                        </p:column>
+                        <p:column headerText="Valor Unitário" >
+                            <h:outputText value="#{lista.val_unit}" />
+                        </p:column>
+                    </p:dataTable>
+
+                    <p:panelGrid id="panelAlterar1" columns="4">
+
+                        <h:outputText value="Data: * "/>
+                        <p:inputMask mask="99/99/9999" value="#{vendaMB.venda.data}" maxlength="12" size="20"/>
+
+                        <h:outputText value="NF:" />
+                        <p:inputText value="#{vendaMB.venda.nfv}" maxlength="20" size="20"/>
+                        <h:outputText value="Condições de Pagamento: "/>
+                        <p:column >
+                            <p:inputText value="#{vendaMB.venda.condpag.descricao}" disabled="true"/>
+                            <p:commandButton value="..." 
+                                             oncomplete="dialogCadastrar.hide();dialogIncluirCon.show()" 
+                                             update=""/>
+                        </p:column>
+                        <h:outputText value="Formas de Pagamento: "/>
+                        <p:column >
+                            <p:inputText value="#{vendaMB.venda.formapag.descricao}" disabled="true"/>
+                            <p:commandButton value="..." 
+                                             oncomplete="dialogCadastrar.hide();dialogIncluirFop.show()" 
+                                             update=""/>
+                        </p:column>
+                        <h:outputText value="Cliente: "/>
+                        <p:column >
+                            <p:inputText value="#{vendaMB.venda.cliente.nome}" disabled="true"/>
+                            <p:commandButton value="..." 
+                                             oncomplete="dialogCadastrar.hide();dialogIncluirCli.show()" 
+                                             update=""/>
+
+                        </p:column>
+                        <h:outputText value="Vendedor: "/>
+                        <p:column >
+                            <p:inputText value="#{vendaMB.venda.vendedor.nome}" disabled="true"/>
+                            <p:commandButton value="..." 
+                                             oncomplete="dialogCadastrar.hide();dialogIncluirVen.show()" 
+                                             update=""/>
+                        </p:column>
+
+                    </p:panelGrid>
+
+                    <br/>
+
+                    <p:panelGrid columns="7">
+
+                        <h:outputText value="Valor Total: "/>
+                        <p:inputText value="#{vendaMB.venda.valor}" maxlength="10" size="15"/>
+
+                        <h:outputText value="   Dinheiro: "/>
+                        <p:inputText value="#{vendaMB.dinheiro}" maxlength="10" size="15"/>
+
+                        <p:commandButton value="Troco" actionListener="#{vendaMB.TrocoVenda}" update=":cadVenCadastrar:Cadastrar" oncomplete="dialogCadastrar.show()" />
+
+                        <h:outputText value="   Voltar R$: "/>
+                        <h:outputText value="#{vendaMB.troco}" />
+
+                    </p:panelGrid>
+
+
+                    <br/>
+
+                    <p:commandButton value="Confirmar"
+                                     actionListener="#{vendaMB.cadastrar}"
+                                     update=":cadVenPrincipal:tabelaVenda"
+                                     oncomplete="dialogCadastrar.hide()" />
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="dialogCadastrar.hide()" 
+                                     actionListener="#{vendaMB.cancelar}"/>
+                </p:dialog>
+            </h:form>
+        </div>
+
+
+        <div align="center">
+            <h:form id="cadVenConIncluir">
+                <p:dialog header="Incluir" widgetVar="dialogIncluirCon" modal="true"
+                          id="Incluir" closable="false">
+                    <p:dataTable var="lista" value="#{vendaMB.condpag}" id="tabelaCondpag" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Condições de Pagamento</h3>
+                        </f:facet>
+                        <p:column headerText="Descrição" >
+                            <h:outputText value="#{lista.descricao}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadVenCadastrar:Cadastrar" 
+                                           oncomplete="dialogIncluirCon.hide();dialogCadastrar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{vendaMB.venda.condpag}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadVenFopIncluir">
+                <p:dialog header="Incluir" widgetVar="dialogIncluirFop" modal="true"
+                          id="Incluir" closable="false">
+                    <p:dataTable var="lista" value="#{vendaMB.formapag}" id="tabelaFormapag" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Formas de Pagamento</h3>
+                        </f:facet>
+                        <p:column headerText="Descrição" >
+                            <h:outputText value="#{lista.descricao}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadVenCadastrar:Cadastrar" 
+                                           oncomplete="dialogIncluirFop.hide();dialogCadastrar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{vendaMB.venda.formapag}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadVenCliIncluir">
+                <p:dialog header="Incluir" widgetVar="dialogIncluirCli" modal="true"
+                          id="Incluir" closable="false">
+                    <p:dataTable var="lista" value="#{vendaMB.cliente}" id="tabelaCliente" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Cliente</h3>
+                        </f:facet>
+                        <p:column headerText="Cliente" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadVenCadastrar:Cadastrar" 
+                                           oncomplete="dialogIncluirCli.hide();dialogCadastrar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{vendaMB.venda.cliente}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadVenVenIncluir">
+                <p:dialog header="Incluir" widgetVar="dialogIncluirVen" modal="true"
+                          id="Incluir" closable="false">
+                    <p:dataTable var="lista" value="#{vendaMB.vendedor}" id="tabelaVendedor" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Vendedor</h3>
+                        </f:facet>
+                        <p:column headerText="Vendedor" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadVenCadastrar:Cadastrar" 
+                                           oncomplete="dialogIncluirVen.hide();dialogCadastrar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{vendaMB.venda.vendedor}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadVenProCadastrar">
+                <p:dialog header="Produto" widgetVar="dialogProduto" modal="true"
+                          id="Produto" closable="false">
+                    <p:dataTable var="lista" value="#{vendaMB.produtos}" id="tabelaProduto" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Lista de Produtos</h3>
+                        </f:facet>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="selecionar" update=":cadVenCadastrar:Cadastrar" 
+                                           oncomplete="dialogCadastrar.show(); dialogProduto.hide()" 
+                                           immediate="true">
+                                <f:setPropertyActionListener value="#{lista}" target="#{vendaMB.produto}"/>
+                                <f:setPropertyActionListener value="" target="#{vendaMB.produto.quantidadeVenda}"/>
+                                <p:graphicImage value="./imagens/ok.png" />
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Produto" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Estoque" >
+                            <h:outputText value="#{lista.quantidade}" />
+                        </p:column>
+                        <p:column headerText="Valor Unitário" >
+                            <h:outputText value="#{lista.val_unit}" />
+                        </p:column>
+
+                    </p:dataTable>
+                    <p:commandButton value="Cancelar" oncomplete="dialogCadastrar.show(); dialogProduto.hide()"/>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadVenExcluir">
+                <p:confirmDialog id="Excluir"
+                                 message="Você gostaria de excluir venda #{vendaMB.venda.data}?"
+                                 header="Excluir" severity="alert" widgetVar="confirmation" >
+                    <p:commandButton id="confirm" value="Sim"
+                                     oncomplete="confirmation.hide()"
+                                     actionListener="#{vendaMB.apagar}"
+                                     update=":cadVenPrincipal:tabelaVenda" />
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="confirmation.hide()" 
+                                     actionListener="#{vendaMB.cancelar}"/>
+                </p:confirmDialog>
+            </h:form>
+        </div>
+        <div align="center">
+            <h:form id="cadVenBuscar">
+                <p:dialog header="Buscar" widgetVar="dialogBuscar" modal="true"
+                          id="Buscar">
+                    <p:panelGrid id="panelBuscar" columns="2">
+                        <h:outputText value="Data: "/>
+                        <p:inputText value="#{vendaMB.venda.data}" maxlength="12" size="20"/>
+                        <h:outputText value="Valor: "/>
+                        <p:inputText value="#{vendaMB.venda.valor}" maxlength="10" size="20"/>
+                        <h:outputText value="NF:" />
+                        <p:inputText value="#{vendaMB.venda.nfv}" maxlength="20" size="20"/>
+                        <h:outputText value="Condições de Pagamento"/>
+                        <p:column>
+                            <p:inputText value="#{vendaMB.venda.condpag.descricao}"/>
+                            <p:commandButton value="..." oncomplete="dialogBuscar.hide();dialogBuscarCon.show()"
+                                             update=":cadVenConBusca:Buscar"/>
+                        </p:column>
+                        <h:outputText value="Formas de Pagamento"/>
+                        <p:column>
+                            <p:inputText value="#{vendaMB.venda.formapag.descricao}"/>
+                            <p:commandButton value="..." oncomplete="dialogBuscar.hide();dialogBuscarFop.show()"
+                                             update=":cadVenFopBusca:Buscar"/>
+                        </p:column>
+                        <h:outputText value="Cliente"/>
+                        <p:column>
+                            <p:inputText value="#{vendaMB.venda.cliente.nome}"/>
+                            <p:commandButton value="..." oncomplete="dialogBuscar.hide();dialogBuscarCli.show()"
+                                             update=":cadVenCliBusca:Buscar"/>
+                        </p:column>
+                        <h:outputText value="Vendedor"/>
+                        <p:column>
+                            <p:inputText value="#{vendaMB.venda.vendedor.nome}"/>
+                            <p:commandButton value="..." oncomplete="dialogBuscar.hide();dialogBuscarVen.show()"
+                                             update=":cadVenVenBusca:Buscar"/>
+                        </p:column>
+                    </p:panelGrid>
+                    <p:commandButton value="Buscar"
+                                     actionListener="#{vendaMB.busca}"
+                                     update=":cadVenPrincipal:tabelaVenda" 
+                                     oncomplete="dialogBuscar.hide()"/>
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="dialogBuscar.hide()" 
+                                     actionListener="#{vendaMB.cancelar}"/>
+                </p:dialog>
+            </h:form>
+        </div>
+
+
+        <div align="center">
+            <h:form id="cadVenConBusca">
+                <p:dialog header="Buscar" widgetVar="dialogBuscarCon" modal="true"
+                          id="Buscar" closable="false">
+                    <p:dataTable var="lista" value="#{vendaMB.condpag}" id="tabelaCondpag" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Condições de Pagamento</h3>
+                        </f:facet>
+                        <p:column headerText="Descrição" >
+                            <h:outputText value="#{lista.descricao}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadVenBuscar:Buscar" 
+                                           oncomplete="dialogBuscarCon.hide();dialogBuscar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{vendaMB.venda.condpag}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadVenFopBusca">
+                <p:dialog header="Buscar" widgetVar="dialogBuscarFop" modal="true"
+                          id="Buscar" closable="false">
+                    <p:dataTable var="lista" value="#{vendaMB.formapag}" id="tabelaFormapag" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Formas de Pagamento</h3>
+                        </f:facet>
+                        <p:column headerText="Descrição" >
+                            <h:outputText value="#{lista.descricao}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadVenBuscar:Buscar" 
+                                           oncomplete="dialogBuscarFop.hide();dialogBuscar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{vendaMB.venda.formapag}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadVenCliBusca">
+                <p:dialog header="Buscar" widgetVar="dialogBuscarCli" modal="true"
+                          id="Buscar" closable="false">
+                    <p:dataTable var="lista" value="#{vendaMB.cliente}" id="tabelaCliente" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Cliente</h3>
+                        </f:facet>
+                        <p:column headerText="Cliente" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadVenBuscar:Buscar" 
+                                           oncomplete="dialogBuscarCli.hide();dialogBuscar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{vendaMB.venda.cliente}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadVenVenBusca">
+                <p:dialog header="Buscar" widgetVar="dialogBuscarVen" modal="true"
+                          id="Buscar" closable="false">
+                    <p:dataTable var="lista" value="#{vendaMB.vendedor}" id="tabelaVendedor" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Vendedor</h3>
+                        </f:facet>
+                        <p:column headerText="Cliente" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadVenBuscar:Buscar" 
+                                           oncomplete="dialogBuscarVen.hide();dialogBuscar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{vendaMB.venda.vendedor}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadVenVisualizar">
+                <p:dialog header="Dados da Venda" widgetVar="dialogVisualizar" modal="true"
+                          id="Visualizar">
+
+                    <p:dataTable var="lista" value="#{vendaMB.venda.produtos}" id="tabelaProduto" rows="5" paginator="true">
+                        <p:column headerText="Produto" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Quantidade" >
+                            <h:outputText value="#{lista.quantidadeVenda}" />
+                        </p:column>
+                        <p:column headerText="Valor Unitário" >
+                            <h:outputText value="#{lista.val_unit}" />
+                        </p:column>
+
+                    </p:dataTable>
+
+
+                    <p:panelGrid id="panelVisualizar" columns="2">
+
+                        <h:outputText value="Data: "/>
+                        <h:outputText value="#{vendaMB.venda.data}" /> 
+                        <h:outputText value="Nota Fiscal: "/>
+                        <h:outputText value="#{vendaMB.venda.nfv}" />
+                        <h:outputText value="Cliente: "/>
+                        <h:outputText value="#{vendaMB.venda.cliente.nome}" />
+                        <h:outputText value="Vendedor: "/>
+                        <h:outputText value="#{vendaMB.venda.vendedor.nome}" />
+                        <h:outputText value="Condição de Pagamento: "/>
+                        <h:outputText value="#{vendaMB.venda.condpag.descricao}" />
+                        <h:outputText value="Forma de Pagamento: "/>
+                        <h:outputText value="#{vendaMB.venda.formapag.descricao}" />
+                        <h:outputText value="Valor Total: "/>
+                        <h:outputText value="#{vendaMB.venda.valor}" />
+
+                    </p:panelGrid>
+
+
+                </p:dialog> 
+            </h:form>
+        </div>
+
+    </h:body>
+</html>

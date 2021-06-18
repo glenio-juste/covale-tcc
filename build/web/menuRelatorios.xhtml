@@ -1,0 +1,95 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:form>
+
+        <body bgcolor="#CEF6EC">
+
+            <div align="center">
+                <font color="#OB61OB">
+                    <h:outputText value="RELATÓRIOS" style="font-size: 50px;" />
+                </font>
+            </div>
+
+            <h:panelGrid columns="4" cellspacing="55" width="115%">
+
+                <h:commandLink action="relatorioCliente?faces-redirect=true">
+                    <p:graphicImage  value="./imagens/relcli.png" title="Cliente"/>
+                    <font color="#OB61OB">
+                        <br/>
+                        <b>
+                            <h:outputText value="Cliente" style="font-size: 20px;"/>
+                        </b>
+                    </font>
+                </h:commandLink>
+
+                <h:commandLink action="relatorioCompra?faces-redirect=true">
+                    <p:graphicImage  value="./imagens/relcom.png" title="Compra"/>
+                    <font color="#OB61OB">
+                        <br/>
+                        <b>
+                            <h:outputText value="Compra" style="font-size: 20px;"/>
+                        </b>
+                    </font>
+                </h:commandLink>
+
+                <h:commandLink action="relatorioFornecedor?faces-redirect=true">
+                    <p:graphicImage  value="./imagens/relfor.png" title="Fornecedor"/>
+                    <font color="#OB61OB">
+                        <br/>
+                        <b>
+                            <h:outputText value="Fornecedor" style="font-size: 20px;"/>
+                        </b>
+                    </font>
+                </h:commandLink>
+
+                <h:commandLink action="relatorioProdutos?faces-redirect=true">
+                    <p:graphicImage  value="./imagens/relpro.png" title="Produtos"/>
+                    <font color="#OB61OB">
+                        <br/>
+                        <b>
+                            <h:outputText value="Produtos" style="font-size: 20px;"/>
+                        </b>
+                    </font>
+                </h:commandLink>
+
+                <h:commandLink action="relatorioVenda?faces-redirect=true">
+                    <p:graphicImage  value="./imagens/relven.png" title="Venda"/>
+                    <font color="#OB61OB">
+                        <br/>
+                        <b>
+                            <h:outputText value="Venda" style="font-size: 20px;"/>
+                        </b>
+                    </font>
+                </h:commandLink>
+
+                <h:commandLink action="relatorioCaixa?faces-redirect=true">
+                    <p:graphicImage  value="./imagens/relcax.png" title="Caixa"/>
+                    <font color="#OB61OB">
+                        <br/>
+                        <b>
+                            <h:outputText value="Caixa" style="font-size: 20px;"/>
+                        </b>
+                    </font>
+                </h:commandLink>
+
+                <h:commandLink action="menu?faces-redirect=true">
+                    <p:graphicImage  value="./imagens/menu.png" title="Cliente"/>
+                    <font color="#OB61OB">
+                        <br/>
+                        <b>
+                            <h:outputText value="Menu Principal" style="font-size: 20px;"/>
+                        </b>
+                    </font>
+                </h:commandLink>
+
+
+
+            </h:panelGrid>
+
+
+        </body>
+
+    </h:form>
+</html>

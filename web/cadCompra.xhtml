@@ -1,0 +1,624 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>Cadastro de Compras</title>
+    </h:head>
+    <h:body>
+        <div align="center">
+            <h:form id="cadComPrincipal">
+
+                <body bgcolor="#CEF6EC">
+
+                    <p:growl id="growl" showDetail="true"  life="7000" autoUpdate="true"/>
+                    <p:dataTable var="lista" value="#{compraMB.compras}" id="tabelaCompra" rows="8" paginator="true">
+                        <f:facet name="header">
+                            <h3>Compras</h3>
+                        </f:facet>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Alterar" update=":cadComAlterar:Alterar" action="#{compraMB.produtosNotCom(lista)}" oncomplete="dialogAlterar.show()" immediate="true">
+                                <p:graphicImage value="./imagens/editar.png" />
+                                <f:setPropertyActionListener target="#{compraMB.compra}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                            <p:commandLink title="Excluir" update=":cadComExcluir:Excluir" oncomplete="confirmation.show()" immediate="true" >
+                                <p:graphicImage value="./imagens/inativo.png" />
+                                <f:setPropertyActionListener target="#{compraMB.compra}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+
+                            <p:commandLink title="Visualizar" update=":cadConVisualizar:Visualizar" oncomplete="dialogVisualizar.show()" immediate="true" >
+                                <p:graphicImage value="./imagens/visualizar.png" />
+                                <f:setPropertyActionListener target="#{compraMB.compra}"
+                                                             value="#{lista}"/>
+                            </p:commandLink>
+
+                        </p:column>
+                        <p:column headerText="Data" >
+                            <h:outputText value="#{lista.data}" />
+                        </p:column>
+                        <p:column headerText="Valor" >
+                            <h:outputText value="#{lista.valor}" />
+                        </p:column>
+                        <p:column headerText="Nota Fiscal" >
+                            <h:outputText value="#{lista.nf}" />
+                        </p:column>
+                        <p:column headerText="Condição Pagamento" >
+                            <h:outputText value="#{lista.condpag.descricao}"/>
+                        </p:column>
+                        <p:column headerText="Forma Pagamento" >
+                            <h:outputText value="#{lista.formapag.descricao}"/>
+                        </p:column>
+                        <p:column headerText="Fornecedor" >
+                            <h:outputText value="#{lista.fornecedor.nome}"/>
+                        </p:column>
+                    </p:dataTable>
+                    <p:commandButton update=":cadComCadastrar:Cadastrar" value="Novo"
+                                     oncomplete="dialogCadastrar.show()" />
+                    <p:commandButton oncomplete="dialogBuscar.show()" value="Buscar"
+                                     update=":cadComBuscar:Buscar"/>
+                    <p:commandButton update=":cadComPrincipal:tabelaCompra" value="Limpar Busca"
+                                     actionListener="#{compraMB.limparBusca}" />
+
+                    <p:commandButton oncomplete="dialog.show()" value="Caixa" action="cadCaixa?faces-redirect=true"/>
+                    <h:commandLink action="cadCaixa?faces-redirect=true"/>
+
+                    <p:commandButton oncomplete="dialog.show()" value="Menu" action="menu?faces-redirect=true"/>
+                    <h:commandLink action="menu?faces-redirect=true"/>
+
+                </body>
+
+            </h:form>
+        </div>
+        <div align="center">
+            <h:form id="cadComAlterar">
+                <p:dialog header="Alterar Compra" widgetVar="dialogAlterar" modal="true"
+                          id="Alterar">
+                    <p:panelGrid id="panelAlterar" columns="4">
+
+                        <h:outputText value="Selecionar Produto" />
+
+                        <p:column >
+                            <p:inputText value="#{compraMB.produto.nome}" disabled="true" />
+                            <p:commandButton value="..." update=":cadComProAlterar:Produto" oncomplete="dialogAlterar.hide(); dialogProdutoAlt.show()"/>
+                            <p:inputText value="#{compraMB.produto.quantidade}" />
+                            <p:commandButton value="Adicionar" actionListener="#{compraMB.addProduto}" update=":cadComAlterar:Alterar:" oncomplete="dialogAlterar.show()"/>
+                        </p:column>
+
+                    </p:panelGrid>
+                    <p:dataTable var="lista" value="#{compraMB.compra.produtos}" id="tabelaProduto" rows="2" paginator="true">
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="excluir" update=":cadComAlterar:Alterar" 
+                                           oncomplete="dialogAlterar.show()" 
+                                           actionListener="#{compraMB.removeProduto(lista)}"
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/inativo.png" />
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Produto" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Quantidade" >
+                            <h:outputText value="#{lista.quantidade}" />
+                        </p:column>
+                        <p:column headerText="Valor Unit Compra" >
+                            <h:outputText value="#{lista.preco_compra}" />
+                        </p:column>
+                    </p:dataTable>
+
+                    <p:panelGrid id="panelAlterar1" columns="4">
+
+                        <h:outputText value="Valor: R$ "/>
+                        <p:inputText value="#{compraMB.compra.valor}" maxlength="10" size="20"/>
+
+                        <h:outputText value="Data: "/>
+                        <p:inputMask mask="99/99/9999" value="#{compraMB.compra.data}" maxlength="12" size="20"/>
+                        <h:outputText value="Nota Fiscal: " />
+                        <p:inputText value="#{compraMB.compra.nf}" maxlength="18" size="20" />
+                        <h:outputText value="Condições de Pagamento: "/>
+                        <p:column >
+                            <p:inputText value="#{compraMB.compra.condpag.descricao}" disabled="true"/>
+                            <p:commandButton value="..." 
+                                             oncomplete="dialogAlterar.hide();dialogAlterarCom.show()" 
+                                             update=":cadComConAlterar:Alterar"/>
+                        </p:column>
+                        <h:outputText value="Forma de Pagamento"/>
+                        <p:column >
+                            <p:inputText value="#{compraMB.compra.formapag.descricao}" disabled="true"/>
+                            <p:commandButton value="..." 
+                                             oncomplete="dialogAlterar.hide();dialogAlterarCom.show()" 
+                                             update=":cadComFopAlterar:Alterar"/>
+                        </p:column>
+                        <h:outputText value="Fornecedor"/>
+                        <p:column >
+                            <p:inputText value="#{compraMB.compra.fornecedor.nome}" disabled="true"/>
+                            <p:commandButton value="..." 
+                                             oncomplete="dialogAlterar.hide();dialogAlterarCom.show()" 
+                                             update=":cadComForAlterar:Alterar"/>
+                        </p:column>
+
+                    </p:panelGrid>
+
+                    <br/>
+
+                    <p:commandButton value="Confirmar"
+                                     actionListener="#{compraMB.alterar}"
+                                     update=":cadComPrincipal:tabelaCompra"
+                                     oncomplete="dialogAlterar.hide()" />
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="dialogAlterar.hide()" 
+                                     actionListener="#{compraMB.cancelar}"/>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadComConAlterar">
+                <p:dialog header="Alterar" widgetVar="dialogAlterarCom" modal="true"
+                          id="Alterar" closable="false">
+                    <p:dataTable var="lista" value="#{compraMB.condpag}" id="tabelaCondpag" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Condições de Pagamento</h3>
+                        </f:facet>
+                        <p:column headerText="Descrição" >
+                            <h:outputText value="#{lista.descricao}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadComAlterar:Alterar" 
+                                           oncomplete="dialogAlterarCom.hide();dialogAlterar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{compraMB.compra.condpag}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadComFopAlterar">
+                <p:dialog header="Alterar" widgetVar="dialogAlterarCom" modal="true"
+                          id="Alterar" closable="false">
+                    <p:dataTable var="lista" value="#{compraMB.formapag}" id="tabelaFormapag" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Formas de Pagamento</h3>
+                        </f:facet>
+                        <p:column headerText="Descrição" >
+                            <h:outputText value="#{lista.descricao}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadComAlterar:Alterar" 
+                                           oncomplete="dialogAlterarCom.hide();dialogAlterar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{compraMB.compra.formapag}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadComForAlterar">
+                <p:dialog header="Alterar" widgetVar="dialogAlterarCom" modal="true"
+                          id="Alterar" closable="false">
+                    <p:dataTable var="lista" value="#{compraMB.fornecedor}" id="tabelaFornecedor" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Fornecedor</h3>
+                        </f:facet>
+                        <p:column headerText="Fornecedor" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadComAlterar:Alterar" 
+                                           oncomplete="dialogAlterarCom.hide();dialogAlterar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{compraMB.compra.fornecedor}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadComProAlterar">
+                <p:dialog header="Produto" widgetVar="dialogProdutoAlt" modal="true"
+                          id="Produto" closable="false">
+                    <p:dataTable var="lista" value="#{compraMB.produtos}" id="tabelaProduto" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Lista de Produtos </h3>
+                        </f:facet>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="selecionar" update=":cadComAlterar:Alterar" 
+                                           oncomplete="dialogAlterar.show(); dialogProdutoAlt.hide()" 
+
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+
+                                <f:setPropertyActionListener value="#{lista}" target="#{compraMB.produto}"/>
+                                <f:setPropertyActionListener value="" target="#{compraMB.produto.quantidade}"/>
+
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Produto" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Quantidade" >
+                            <h:outputText value="#{lista.quantidade}" />
+                        </p:column>
+                        <p:column headerText="Valor Unitário" >
+                            <h:outputText value="#{lista.val_unit}" />
+                        </p:column>
+                    </p:dataTable>
+                    <p:commandButton value="Cancelar" oncomplete="dialogAlterar.show(); dialogProdutoAlt.hide()"/>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadComCadastrar">
+                <p:dialog header="Cadastrar Compra" widgetVar="dialogCadastrar" modal="true"
+                          id="Cadastrar">
+                    <p:panelGrid id="panelAlterar" columns="4">
+
+                        <h:outputText value="Selecionar Produtos" />
+                        <p:column >
+                            <p:inputText value="#{compraMB.produto.nome}" disabled="true" />
+                            <p:commandButton value="..." update=":cadComCadastrar:Cadastrar" oncomplete="dialogCadastrar.hide(); dialogProduto.show()"/>
+                        </p:column>
+                        <h:outputText value="Digite a Quantidade"/>
+                        <p:column>
+                            <p:inputText value="#{compraMB.produto.quantidade}" />
+                            <p:commandButton value="Adicionar" actionListener="#{compraMB.addProduto}" update=":cadComCadastrar:Cadastrar" oncomplete="dialogCadastrar.show()"/>
+                        </p:column>
+
+                    </p:panelGrid>
+                    <p:dataTable var="lista" value="#{compraMB.compra.produtos}" id="tabelaProduto" rows="2" paginator="true">
+
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="excluir" update=":cadComCadastrar:Cadastrar" 
+                                           oncomplete="dialogCadastrar.show()" 
+                                           actionListener="#{compraMB.removeProduto(lista)}"
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/inativo.png" />
+
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Produto" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Quantidade" >
+                            <h:outputText value="#{lista.quantidade}" />
+                        </p:column>
+                        <p:column headerText="Valor Unit Compra" >
+                            <h:outputText value="#{lista.preco_compra}" />
+                        </p:column>
+
+                    </p:dataTable>
+
+                    <p:panelGrid id="panelAlterar1" columns="4">
+
+                        <h:outputText value="Valor: R$ "/>
+                        <p:inputText value="#{compraMB.compra.valor}" maxlength="10" size="20"/>
+
+                        <h:outputText value="Data: "/>
+                        <p:inputMask mask="99/99/9999" value="#{compraMB.compra.data}" maxlength="12" size="20"/>
+                        <h:outputText value="Nota Fiscal: " />
+                        <p:inputText value="#{compraMB.compra.nf}" maxlength="18" size="20" />
+                        <h:outputText value="Condições de Pagamento: "/>
+                        <p:column >
+                            <p:inputText value="#{compraMB.compra.condpag.descricao}" disabled="true"/>
+                            <p:commandButton value="..." 
+                                             oncomplete="dialogCadastrar.hide();dialogIncluirCon.show()" 
+                                             update=""/>
+                        </p:column>
+                        <h:outputText value="Formas de Pagamento: "/>
+                        <p:column >
+                            <p:inputText value="#{compraMB.compra.formapag.descricao}" disabled="true"/>
+                            <p:commandButton value="..." 
+                                             oncomplete="dialogCadastrar.hide();dialogIncluirFop.show()" 
+                                             update=""/>
+                        </p:column>
+                        <h:outputText value="Fornecedor: "/>
+                        <p:column >
+                            <p:inputText value="#{compraMB.compra.fornecedor.nome}" disabled="true"/>
+                            <p:commandButton value="..." 
+                                             oncomplete="dialogCadastrar.hide();dialogIncluirFor.show()" 
+                                             update=""/>
+
+                        </p:column>
+
+
+                    </p:panelGrid>
+
+                    <br/>
+
+                    <p:commandButton value="Confirmar"
+                                     actionListener="#{compraMB.cadastrar}"
+                                     update=":cadComPrincipal:tabelaCompra"
+                                     oncomplete="dialogCadastrar.hide()" />
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="dialogCadastrar.hide()" 
+                                     actionListener="#{compraMB.cancelar}"/>
+
+                </p:dialog>
+
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadComConIncluir">
+                <p:dialog header="Incluir" widgetVar="dialogIncluirCon" modal="true"
+                          id="Incluir" closable="false">
+                    <p:dataTable var="lista" value="#{compraMB.condpag}" id="tabelaCondpag" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Condições de Pagamento</h3>
+                        </f:facet>
+                        <p:column headerText="Descrição" >
+                            <h:outputText value="#{lista.descricao}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadComCadastrar:Cadastrar" 
+                                           oncomplete="dialogIncluirCon.hide();dialogCadastrar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{compraMB.compra.condpag}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadComFopIncluir">
+                <p:dialog header="Incluir" widgetVar="dialogIncluirFop" modal="true"
+                          id="Incluir" closable="false">
+                    <p:dataTable var="lista" value="#{compraMB.formapag}" id="tabelaFormapag" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Formas de Pagamento</h3>
+                        </f:facet>
+                        <p:column headerText="Descrição" >
+                            <h:outputText value="#{lista.descricao}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadComCadastrar:Cadastrar" 
+                                           oncomplete="dialogIncluirFop.hide();dialogCadastrar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{compraMB.compra.formapag}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadComForIncluir">
+                <p:dialog header="Incluir" widgetVar="dialogIncluirFor" modal="true"
+                          id="Incluir" closable="false">
+                    <p:dataTable var="lista" value="#{compraMB.fornecedor}" id="tabelaFornecedor" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Fornecedor</h3>
+                        </f:facet>
+                        <p:column headerText="Fornecedor" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadComCadastrar:Cadastrar" 
+                                           oncomplete="dialogIncluirFor.hide();dialogCadastrar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{compraMB.compra.fornecedor}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadComProCadastrar">
+                <p:dialog header="Produto" widgetVar="dialogProduto" modal="true"
+                          id="Produto" closable="false">
+                    <p:dataTable var="lista" value="#{compraMB.produtos}" id="tabelaProduto" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Lista de Produtos </h3>
+                        </f:facet>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="selecionar" update=":cadComCadastrar:Cadastrar" 
+                                           oncomplete="dialogCadastrar.show(); dialogProduto.hide()" 
+
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+
+                                <f:setPropertyActionListener value="#{lista}" target="#{compraMB.produto}"/>
+                                <f:setPropertyActionListener value="" target="#{compraMB.produto.quantidade}"/>
+
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Produto" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Quantidade" >
+                            <h:outputText value="#{lista.quantidade}" />
+                        </p:column>
+                        <p:column headerText="Valor Unitário" >
+                            <h:outputText value="#{lista.val_unit}" />
+                        </p:column>
+                    </p:dataTable>
+                    <p:commandButton value="Cancelar" oncomplete="dialogCadastrar.show(); dialogProduto.hide()"/>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadComExcluir">
+                <p:confirmDialog id="Excluir"
+                                 message="Você gostaria de excluir a compra #{compraMB.compra.data}?"
+                                 header="Excluir" severity="alert" widgetVar="confirmation" >
+                    <p:commandButton id="confirm" value="Sim"
+                                     oncomplete="confirmation.hide()"
+                                     actionListener="#{compraMB.apagar}"
+                                     update=":cadComPrincipal:tabelaCompra" />
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="confirmation.hide()" 
+                                     actionListener="#{compraMB.cancelar}"/>
+                </p:confirmDialog>
+            </h:form>
+        </div>
+        <div align="center">
+            <h:form id="cadComBuscar">
+                <p:dialog header="Buscar Compra" widgetVar="dialogBuscar" modal="true"
+                          id="Buscar">
+                    <p:panelGrid id="panelBuscar" columns="2">
+
+                        <h:outputText value="Data: "/>
+                        <p:inputText value="#{compraMB.compra.data}" maxlength="12" size="21"/>
+                        <h:outputText value="Valor: "/>
+                        <p:inputText value="#{compraMB.compra.valor}" maxlength="20" size="21"/>
+                        <h:outputText value="Nota Fiscal: " />
+                        <p:inputText value="#{compraMB.compra.nf}" maxlength="20" size="21" />
+                        <h:outputText value="Condições de Pagamento"/>
+                        <p:inputText value="#{compraMB.compra.condpag.descricao}" maxlength="20" size="21" />
+                        <h:outputText value="Formas de Pagamento:"/>
+                        <p:inputText value="#{compraMB.compra.formapag.descricao}" maxlength="20" size="21" />
+                        <h:outputText value="Fornecedor:"/>
+                        <p:inputText value="#{compraMB.compra.fornecedor.nome}" maxlength="20" size="21" />
+
+                    </p:panelGrid>
+                    <p:commandButton value="Buscar"
+                                     actionListener="#{compraMB.busca}"
+                                     update=":cadComPrincipal:tabelaCompra" 
+                                     oncomplete="dialogBuscar.hide()"/>
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="dialogBuscar.hide()" 
+                                     actionListener="#{compraMB.cancelar}" />
+                </p:dialog>
+            </h:form>
+        </div>
+        <div align="center">
+            <h:form id="cadComConBusca">
+                <p:dialog header="Buscar" widgetVar="dialogBuscarCon" modal="true"
+                          id="Buscar" closable="false">
+                    <p:dataTable var="lista" value="#{compraMB.condpag}" id="tabelaCondpag" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Condições de Pagamento</h3>
+                        </f:facet>
+                        <p:column headerText="Descrição" >
+                            <h:outputText value="#{lista.descricao}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadComBuscar:Buscar" 
+                                           oncomplete="dialogBuscarCon.hide();dialogBuscar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{compraMB.compra.condpag}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadComFopBusca">
+                <p:dialog header="Buscar" widgetVar="dialogBuscarFop" modal="true"
+                          id="Buscar" closable="false">
+                    <p:dataTable var="lista" value="#{compraMB.formapag}" id="tabelaFormapag" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Formas de Pagamento</h3>
+                        </f:facet>
+                        <p:column headerText="Descrição" >
+                            <h:outputText value="#{lista.descricao}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadComBuscar:Buscar" 
+                                           oncomplete="dialogBuscarFop.hide();dialogBuscar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{compraMB.compra.formapag}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadComForBusca">
+                <p:dialog header="Buscar" widgetVar="dialogBuscarFor" modal="true"
+                          id="Buscar" closable="false">
+                    <p:dataTable var="lista" value="#{compraMB.fornecedor}" id="tabelaFornecedor" rows="5" paginator="true">
+                        <f:facet name="header">
+                            <h3>Fornecedor</h3>
+                        </f:facet>
+                        <p:column headerText="Fornecedor" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Selecionar" update=":cadComBuscar:Buscar" 
+                                           oncomplete="dialogBuscarFor.hide();dialogBuscar.show()" 
+                                           immediate="true">
+                                <p:graphicImage value="./imagens/ok.png" />
+                                <f:setPropertyActionListener target="#{compraMB.compra.fornecedor}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadConVisualizar">
+                <p:dialog header="Ficha Cadastral" widgetVar="dialogVisualizar" modal="true"
+                          id="Visualizar">
+
+                    <p:dataTable var="lista" value="#{compraMB.compra.produtos}" id="tabelaProduto1" rows="5" paginator="true">
+                        <p:column headerText="Produto" >
+                            <h:outputText value="#{lista.nome}" />
+                        </p:column>
+                        <p:column headerText="Valor Unit" >
+                            <h:outputText value="#{lista.preco_compra}" />
+                        </p:column>
+                    </p:dataTable>
+
+                    <p:panelGrid id="panelVisualizar" columns="2">
+                        <h:outputText value="Data: "/>
+                        <h:outputText value="#{compraMB.compra.data}" /> 
+                        <h:outputText value="Nota Fiscal: "/>
+                        <h:outputText value="#{compraMB.compra.nf}" />
+                        <h:outputText value="Fornecedor: "/>
+                        <h:outputText value="#{compraMB.compra.fornecedor.nome}" />
+                        <h:outputText value="Condição de Pagamento: "/>
+                        <h:outputText value="#{compraMB.compra.condpag.descricao}" />
+                        <h:outputText value="Forma de Pagamento: "/>
+                        <h:outputText value="#{compraMB.compra.formapag.descricao}" />
+                        <h:outputText value="Valor Total: "/>
+                        <h:outputText value="#{compraMB.compra.valor}" />
+
+                    </p:panelGrid>
+
+                </p:dialog> 
+            </h:form>
+        </div>
+
+    </h:body>
+</html>

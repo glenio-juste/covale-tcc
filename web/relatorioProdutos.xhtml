@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>Relatório de Produtos</title>
+    </h:head>
+    <h:body>
+        <div align="center">
+            <h:form id="cadProPrincipal">
+
+                <p:growl id="growl" showDetail="true"  life="7000" autoUpdate="true"/>
+
+                <div align="center">
+
+                    <p:commandButton oncomplete="dialogBuscar.show()" value="Busca"/>
+                    <p:commandButton update=":cadProPrincipal:tabelaProduto" value="Limpar Busca"
+                                     actionListener="#{produtoMB.limparBusca}" />
+                    <p:commandButton oncomplete="dialog.show()" value="Voltar" action="menuRelatorios?faces-redirect=true"/>
+                    <h:commandLink action="menuRelatorios?faces-redirect=true"/>
+
+                </div>
+
+                <p:dataTable var="lista" value="#{produtoMB.produtos}" id="tabelaProduto">
+                    <f:facet name="header">
+                        <h3>Relatórios de Produtos</h3>
+                    </f:facet>
+
+                    <p:column headerText="Nome" >
+                        <h:outputText value="#{lista.nome}" />
+                    </p:column>
+                    <p:column headerText="Marca" >
+                        <h:outputText value="#{lista.marca}" />
+                    </p:column>
+                    <p:column headerText="Grupo" >
+                        <h:outputText value="#{lista.grupo}" />
+                    </p:column>
+                    <p:column headerText="Quantidade" >
+                        <h:outputText value="#{lista.quantidade}" />
+                    </p:column>
+                    <p:column headerText="Medida" >
+                        <h:outputText value="#{lista.medida}" />
+                    </p:column>
+                    <p:column headerText="Valor Unit Compra" >
+                        <h:outputText value="#{lista.preco_compra}" />
+                    </p:column>
+                    <p:column headerText="Valor Unit Venda" >
+                        <h:outputText value="#{lista.val_unit}" />
+                    </p:column>
+                </p:dataTable>
+
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadProBuscar">
+                <p:dialog header="Buscar" widgetVar="dialogBuscar" modal="true"
+                          id="Buscar">
+                    <p:panelGrid id="panelBuscar" columns="2">
+                        <h:outputText value="Nome: "/>
+                        <p:inputText value="#{produtoMB.produto.nome}" maxlength="30" size="51"/>
+                        <h:outputText value="Marca: "/>
+                        <p:inputText value="#{produtoMB.produto.marca}" maxlength="30" size="51"/>
+                        <h:outputText value="Grupo: "/>
+                        <p:inputText value="#{produtoMB.produto.grupo}" maxlength="100" size="51"/>
+                        <h:outputText value="Quantidade: "/>
+                        <p:inputText value="#{produtoMB.produto.quantidade}" maxlength="20" size="51"/>
+                        <h:outputText value="Valor Unit Compra: "/>
+                        <p:inputText value="#{produtoMB.produto.preco_compra}" maxlength="30" size="51"/>
+                        <h:outputText value="Valor Unit Venda: "/>
+                        <p:inputText value="#{produtoMB.produto.val_unit}" maxlength="20" size="51"/>
+
+                    </p:panelGrid>
+                    <p:commandButton value="Buscar"
+                                     actionListener="#{produtoMB.busca}"
+                                     update=":cadProPrincipal:tabelaProduto" 
+                                     oncomplete="dialogBuscar.hide()"/>
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="dialogBuscar.hide()" 
+                                     actionListener="#{produtoMB.cancelar}" />
+                </p:dialog>
+            </h:form>
+        </div>
+
+
+
+
+
+
+
+    </h:body>
+</html>

@@ -1,0 +1,212 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>Cadastro do Caixa</title>
+    </h:head>
+    <h:body>
+        <div align="center">
+
+            <h:form id="cadCaxPrincipal">
+
+                <body bgcolor="#CEF6EC">
+
+                    <p:growl id="growl" showDetail="true" life="7000" autoUpdate="true"/>
+                    <p:dataTable var="lista" value="#{caixaMB.caixas}" id="tabelaCaixa" rows="8" paginator="true">
+                        <f:facet name="header">
+                            <h3>Movimento do Caixa</h3>
+                        </f:facet>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Alterar" update=":cadCaxAlterar:Alterar" oncomplete="dialogAlterar.show()" immediate="true">
+                                <p:graphicImage value="./imagens/editar.png" />
+                                <f:setPropertyActionListener target="#{caixaMB.caixa}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                            <p:commandLink title="Excluir" update=":cadCaxExcluir:Excluir" oncomplete="confirmation.show()" immediate="true" >
+                                <p:graphicImage value="./imagens/inativo.png" />
+                                <f:setPropertyActionListener target="#{caixaMB.caixa}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                            <p:commandLink title="Visualizar" update=":cadComVisualizar:Visualizar" oncomplete="dialogVisualizar.show()" immediate="true" >
+                                <p:graphicImage value="./imagens/visualizar.png" />
+                                <f:setPropertyActionListener target="#{caixaMB.caixa}"
+                                                             value="#{lista}"/>
+                            </p:commandLink>
+
+                        </p:column>
+
+                        <p:column headerText="Data" >
+                            <h:outputText value="#{lista.data}" />
+                        </p:column>
+                        <p:column headerText="Tipo" >
+                            <h:outputText value="#{lista.tipo}" />
+                        </p:column>
+                        <p:column headerText="Operação" >
+                            <h:outputText value="#{lista.op}" />
+                        </p:column>
+                        <p:column headerText="Valor" >
+                            <h:outputText value="#{lista.valor}" />
+                        </p:column>
+
+                    </p:dataTable>
+                    <p:commandButton update=":cadCaxCadastrar:Cadastrar" value="Novo"
+                                     oncomplete="dialogCadastrar.show()" />
+                    <p:commandButton oncomplete="dialogBuscar.show()" value="Busca"
+                                     update=":cadCaxBuscar:Buscar"/>
+                    <p:commandButton update=":cadCaxPrincipal:tabelaCaixa" value="Limpar Busca"
+                                     actionListener="#{caixaMB.limparBusca}" />
+
+                    <p:commandButton value="Menu" action="menu.xhtml" ajax="false" />
+
+                    <br/>
+                    <br/>
+
+                    <h:outputText value=" SALDO ATUAL:  "  style="font-size: 22px;"/>
+                    <h:outputText id="saldo" value="#{caixaMB.saldo}" style="font-size: 22px;" />
+                </body>
+
+            </h:form>
+        </div>
+        <div align="center">
+            <h:form id="cadCaxAlterar">
+                <p:dialog header="Alterar Caixa" widgetVar="dialogAlterar" modal="true"
+                          id="Alterar">
+                    <p:panelGrid id="panelAlterar" columns="2">
+                        <h:outputText value="Data: "/>
+                        <p:inputMask mask="99/99/9999" value="#{caixaMB.caixa.data}" maxlength="12" size="12"/>
+
+                        <h:outputText value="Tipo: "/>
+                        <h:selectOneMenu value="#{caixaMB.caixa.tipo}">
+                            <f:selectItem itemValue="Selecione o Tipo"/>
+                            <f:selectItem itemValue="Recebimento"/>
+                            <f:selectItem itemValue="Depósito"/>
+                            <f:selectItem itemValue="Despesas Fixas"/>
+                            <f:selectItem itemValue="Despesas Diversas"/>
+                            <f:selectItem itemValue="Combustível"/>
+                        </h:selectOneMenu>
+
+                        <h:outputText value="Operação: "/>
+                        <h:selectOneMenu value="#{caixaMB.caixa.op}">
+                            <f:selectItem itemValue="Selecione a Operação"/>
+                            <f:selectItem itemValue="Entrada"/>
+                            <f:selectItem itemValue="Saída"/>
+                        </h:selectOneMenu>
+
+                        <h:outputText value="Valor: "/>
+                        <p:inputText value="#{caixaMB.caixa.valor}" maxlength="10" size="12"/>
+                    </p:panelGrid>
+                    <p:commandButton value="Confirmar"
+                                     actionListener="#{caixaMB.alterar}"
+                                     update=":cadCaxPrincipal:tabelaCaixa"
+                                     oncomplete="dialogAlterar.hide()" />
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="dialogAlterar.hide()" 
+                                     actionListener="#{caixaMB.cancelar}"/>
+                </p:dialog>
+            </h:form>
+        </div>
+        <div align="center">
+            <h:form id="cadCaxCadastrar">
+                <p:dialog header="Cadastrar Caixa" widgetVar="dialogCadastrar" modal="true"
+                          id="Cadastrar">
+                    <p:panelGrid id="panelAlterar" columns="2">
+                        <h:outputText value="Data: "/>
+                        <p:inputMask mask="99/99/9999" value="#{caixaMB.caixa.data}" maxlength="12" size="12"/>
+
+                        <h:outputText value="Tipo: "/>
+                        <h:selectOneMenu value="#{caixaMB.caixa.tipo}">
+                            <f:selectItem itemValue="Selecione o Tipo"/>
+                            <f:selectItem itemValue="Recebimento"/>
+                            <f:selectItem itemValue="Depósito"/>
+                            <f:selectItem itemValue="Despesas Fixas"/>
+                            <f:selectItem itemValue="Despesas Diversas"/>
+                            <f:selectItem itemValue="Combustível"/>
+                        </h:selectOneMenu>
+
+                        <h:outputText value="Operação: "/>
+                        <h:selectOneMenu value="#{caixaMB.caixa.op}">
+                            <f:selectItem itemValue="Selecione a Operação"/>
+                            <f:selectItem itemValue="Entrada"/>
+                            <f:selectItem itemValue="Saída"/>
+                        </h:selectOneMenu>
+
+                        <h:outputText value="Valor: "/>
+                        <p:inputText value="#{caixaMB.caixa.valor}" maxlength="10" size="12"/>
+                    </p:panelGrid>
+                    <p:commandButton value="Confirmar"
+                                     actionListener="#{caixaMB.cadastrar}"
+                                     update=":cadCaxPrincipal:tabelaCaixa :cadCaxPrincipal:saldo"
+                                     oncomplete="dialogCadastrar.hide()" />
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="dialogCadastrar.hide()" 
+                                     actionListener="#{caixaMB.cancelar}"/>
+                </p:dialog>
+            </h:form>
+        </div>
+        <div align="center">
+            <h:form id="cadCaxExcluir">
+                <p:confirmDialog id="Excluir"
+                                 message="Você desja mesmo excluir? #{caixaMB.caixa.data}?"
+                                 header="Excluir" severity="alert" widgetVar="confirmation" >
+                    <p:commandButton id="confirm" value="Sim"
+                                     oncomplete="confirmation.hide()"
+                                     actionListener="#{caixaMB.apagar}"
+                                     update=":cadCaxPrincipal:tabelaCaixa" />
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="confirmation.hide()" 
+                                     actionListener="#{caixaMB.cancelar}"/>
+                </p:confirmDialog>
+            </h:form>
+        </div>
+        
+        <div align="center">
+            <h:form id="cadCaxBuscar">
+                <p:dialog header="Buscar" widgetVar="dialogBuscar" modal="true"
+                          id="Buscar">
+                    <p:panelGrid id="panelBuscar" columns="2">
+                        <h:outputText value="Data: "/>
+                        <p:inputText value="#{caixaMB.caixa.data}" maxlength="12" size="20"/>
+                        
+                        <h:outputText value="Tipo:"/>
+                        <p:inputText value="#{caixaMB.caixa.tipo}"/>
+                        <h:outputText value="Operação:"/>
+                        <p:inputText value="#{caixaMB.caixa.op}"/>
+                        
+                        <h:outputText value="Valor: "/>
+                        <p:inputText value="#{caixaMB.caixa.valor}" maxlength="10" size="20"/>
+                    </p:panelGrid>
+                    <p:commandButton value="Buscar"
+                                      action="#{caixaMB.busca()}"
+                                     update=":cadCaxPrincipal:tabelaCaixa" 
+                                     oncomplete="dialogBuscar.hide()"/>
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="dialogBuscar.hide()" 
+                                     actionListener="#{caixaMB.cancelar}" />
+                </p:dialog>
+            </h:form>
+        </div>
+
+        <div align="center">
+            <h:form id="cadComVisualizar">
+                <p:dialog header="Ficha Cadastral" widgetVar="dialogVisualizar" modal="true"
+                          id="Visualizar">
+                    <p:panelGrid id="panelVisualizar" columns="2">
+                        <h:outputText value="Data "/>
+                        <h:outputText value="#{caixaMB.caixa.data}" /> 
+                        <h:outputText value="Tipo: "/>
+                        <h:outputText value="#{caixaMB.caixa.tipo}" />
+                        <h:outputText value="Operação: "/>
+                        <h:outputText value="#{caixaMB.caixa.op}" />
+                        <h:outputText value="Valor: "/>
+                        <h:outputText value="#{caixaMB.caixa.valor}" />
+                    </p:panelGrid>
+
+                </p:dialog> 
+            </h:form>
+        </div>
+
+    </h:body>
+</html>

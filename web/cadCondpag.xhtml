@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>Pagamentos</title>
+    </h:head>
+    <h:body>
+        <div align="center">
+            <h:form id="cadConPrincipal">
+
+                <body bgcolor="#CEF6EC">
+
+                    <p:growl id="growl" showDetail="true"  life="7000" autoUpdate="true"/>
+                    <p:dataTable var="lista" value="#{condpagMB.condpags}" id="tabelaCondpag" rows="8" paginator="true">
+                        <f:facet name="header">
+                            <h3>Prazos de Pagamento</h3>
+                        </f:facet>
+                        <p:column headerText="Ações" width="65">
+                            <p:commandLink title="Alterar" update=":cadConAlterar:Alterar" oncomplete="dialogAlterar.show()" immediate="true">
+                                <p:graphicImage value="./imagens/editar.png" />
+                                <f:setPropertyActionListener target="#{condpagMB.condpag}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                            <p:commandLink title="Excluir" update=":cadConExcluir:Excluir" oncomplete="confirmation.show()" immediate="true" >
+                                <p:graphicImage value="./imagens/inativo.png" />
+                                <f:setPropertyActionListener target="#{condpagMB.condpag}"
+                                                             value="#{lista}" />
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Descrição" >
+                            <h:outputText value="#{lista.descricao}" />
+                        </p:column>
+                    </p:dataTable>
+                    <p:commandButton update=":cadConCadastrar:Cadastrar" value="Novo"
+                                     oncomplete="dialogCadastrar.show()" />
+                    <p:commandButton oncomplete="dialogBuscar.show()" value="Busca"
+                                     update=":cadConBuscar:Buscar"/>
+                    <p:commandButton update=":cadConPrincipal:tabelaCondpag" value="Limpar Busca"
+                                     actionListener="#{condpagMB.limparBusca}" />
+                    <p:commandButton oncomplete="dialog.show()" value="Menu" action="menu?faces-redirect=true"/>
+                    <h:commandLink action="menu?faces-redirect=true"/>
+
+                </body>
+
+            </h:form>
+        </div>
+        <div align="center">
+            <h:form id="cadConAlterar">
+                <p:dialog header="Alterar" widgetVar="dialogAlterar" modal="true"
+                          id="Alterar">
+                    <p:panelGrid id="panelAlterar" columns="2">
+                        <h:outputText value="Descrição: "/>
+                        <p:inputText value="#{condpagMB.condpag.descricao}" maxlength="30" size="31"/>
+                    </p:panelGrid>
+                    <p:commandButton value="Alterar"
+                                     actionListener="#{condpagMB.alterar}"
+                                     update=":cadConPrincipal:tabelaCondpag"
+                                     oncomplete="dialogAlterar.hide()" />
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="dialogAlterar.hide()" 
+                                     actionListener="#{condpagMB.cancelar}"/>
+                </p:dialog>
+            </h:form>
+        </div>
+        <div align="center">
+            <h:form id="cadConCadastrar">
+                <p:dialog header="Cadastrar" widgetVar="dialogCadastrar" modal="true"
+                          id="Cadastrar">
+                    <p:panelGrid id="panelAlterar" columns="2">
+                        <h:outputText value="Descrição: "/>
+                        <p:inputText value="#{condpagMB.condpag.descricao}" maxlength="30" size="31"/>
+                    </p:panelGrid>
+                    <p:commandButton value="Cadastrar"
+                                     actionListener="#{condpagMB.cadastrar}"
+                                     update=":cadConPrincipal:tabelaCondpag"
+                                     oncomplete="dialogCadastrar.hide()" />
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="dialogCadastrar.hide()" 
+                                     actionListener="#{condpagMB.cancelar}"/>
+                </p:dialog>
+            </h:form>
+        </div>
+        <div align="center">
+            <h:form id="cadConExcluir">
+                <p:confirmDialog id="Excluir"
+                                 message="Você gostaria de excluir a condição #{condpagMB.condpag.descricao}?"
+                                 header="Excluir" severity="alert" widgetVar="confirmation" >
+                    <p:commandButton id="confirm" value="Sim"
+                                     oncomplete="confirmation.hide()"
+                                     actionListener="#{condpagMB.apagar}"
+                                     update=":cadConPrincipal:tabelaCondpag" />
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="confirmation.hide()" 
+                                     actionListener="#{condpagMB.cancelar}"/>
+                </p:confirmDialog>
+            </h:form>
+        </div>
+        <div align="center">
+            <h:form id="cadConBuscar">
+                <p:dialog header="Buscar" widgetVar="dialogBuscar" modal="true"
+                          id="Buscar">
+                    <p:panelGrid id="panelBuscar" columns="2">
+                        <h:outputText value="Descrição: "/>
+                        <p:inputText value="#{condpagMB.condpag.descricao}" maxlength="30" size="31"/>
+                    </p:panelGrid>
+                    <p:commandButton value="Buscar"
+                                     actionListener="#{condpagMB.busca}"
+                                     update=":cadConPrincipal:tabelaCondpag" 
+                                     oncomplete="dialogBuscar.hide()"/>
+                    <p:commandButton value="Cancelar"
+                                     oncomplete="dialogBuscar.hide()" 
+                                     actionListener="#{condpagMB.cancelar}" />
+                </p:dialog>
+            </h:form>
+        </div>
+    </h:body>
+</html>

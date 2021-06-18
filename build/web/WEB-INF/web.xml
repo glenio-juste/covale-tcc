@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <!-- Configurações de login -->
+    <security-constraint>
+        <display-name>Permissão de Cadastro</display-name>
+        <web-resource-collection>
+            <web-resource-name>Cadastro de Cliente</web-resource-name>
+            <description/>
+            <url-pattern>/faces/cadCliente.xhtml</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>Restrição de Consulta</description>
+            <role-name>cadastro</role-name>
+            <role-name>consulta</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <display-name>Restriçãode Consulta</display-name>
+        <auth-constraint>
+            <description>Consulta</description>
+            <role-name>consulta</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <display-name>Restrição1</display-name>
+    </security-constraint>
+    <login-config>
+        <auth-method>BASIC</auth-method>
+    </login-config>
+    <!-- Regras (permissões) da aplicação -->
+    <security-role>
+        <role-name>cadastro</role-name>
+    </security-role>
+    <security-role>
+        <role-name>consulta</role-name>
+    </security-role>
+    <!-- É necessário possuir permissão de cadastro ou consulta
+    para acessar o menu do sistema -->
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Página Inicial</web-resource-name>
+            <url-pattern>/faces/menu.jspx</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>cadastro</role-name>
+            <role-name>consulta</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <context-param>
+        <param-name>javax.faces.PROJECT_STAGE</param-name>
+        <param-value>Development</param-value>
+    </context-param>
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>*.xhtml</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+    <welcome-file-list>
+        <welcome-file>login.jsp</welcome-file>
+    </welcome-file-list>
+    
+    <!-- Para Login e Senha -->
+                
+    <servlet>
+        <servlet-name>processaLogin</servlet-name>
+        <servlet-class> br.com.covale.login.ServletValidaLogin </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>processaLogin</servlet-name>
+        <url-pattern> /validaLogin.do </url-pattern>
+    </servlet-mapping>      
+             
+    
+</web-app>
